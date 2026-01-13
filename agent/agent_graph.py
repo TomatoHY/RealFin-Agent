@@ -11,8 +11,8 @@ def build_graph(config: AgentConfig):
     workflow = StateGraph(AgentState)
 
     # Add nodes
-    workflow.add_node("tool_selector", ToolSelectorNode(strategy=config.tool_filter_strategy))
-    workflow.add_node("chat", ChatNode(model=config.model, model_kwargs=config.model_kwargs))
+    workflow.add_node("tool_selector", ToolSelectorNode(strategy=config["tool_filter_strategy"]))
+    workflow.add_node("chat", ChatNode(model=config["model"], model_kwargs=config["model_kwargs"]))
     workflow.add_node("tool_runner", ToolRunnerNode())
 
     # Add edges

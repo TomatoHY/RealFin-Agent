@@ -2,17 +2,18 @@ import argparse
 import json
 import logging
 import os
+from typing import Dict, List
 
 from agent import AgentConfig, RealFinAgent
 
 
 def parse_args():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("--model", type=str, required=True)
+    argparser.add_argument("--model", type=str, default="gpt-3.5-turbo")
     argparser.add_argument("--model_kwargs", type=str, default="{\"temperature\": 0.8, \"top_p\": 0.7, \"top_k\": 50}")
     argparser.add_argument("--output_path", type=str, default="output")
     argparser.add_argument("--max_tool_call", type=int, default=5)
-    argparser.add_argument("--tool_select_strategy", type=str, default="necessary")
+    argparser.add_argument("--tool_filter_strategy", type=str, default="necessary")
     argparser.add_argument("--limit", type=int, default=None)
 
     argparser.add_argument("--log_level", type=str, choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], default="INFO")
@@ -45,7 +46,7 @@ def initialize(args):
         model=args.model,
         model_kwargs=model_kwargs,
         max_tool_call=args.max_tool_call,
-        tool_select_strategy=args.tool_select_strategy,
+        tool_filter_strategy=args.tool_filter_strategy,
     )
 
     config_file = os.path.join(args.output_path, "config.json")

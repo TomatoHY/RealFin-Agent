@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict
+from typing import Callable, Dict
 
 from . import tool_library
 
@@ -11,7 +11,7 @@ def read_tool_desc(tool_desc_path: str = os.path.join(os.path.dirname(__file__),
     return tool_desc
 
 
-def register_tools(tool_desc: Dict[str, dict]) -> Dict[str, callable]:
+def register_tools(tool_desc: Dict[str, dict]) -> Dict[str, Callable]:
     tool_desc = read_tool_desc()
     tools = {}
     for tool_name, tool_info in tool_desc.items():

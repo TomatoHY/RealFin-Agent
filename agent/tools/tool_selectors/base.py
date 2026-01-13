@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 import logging
+from typing import Dict
 
 
 class BaseToolSelector(ABC):
-    def __init__(self) -> None:
+    def __init__(self, name: str) -> None:
         super().__init__()
         self.name = name
         self.logger = logging.getLogger(name)
