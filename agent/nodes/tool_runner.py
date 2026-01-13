@@ -2,7 +2,7 @@ import json
 
 from .base import BaseNode
 from ..state import AgentState
-from tools import register_tools
+from ..tools import register_tools
 
 
 class ToolRunnerNode(BaseNode):
