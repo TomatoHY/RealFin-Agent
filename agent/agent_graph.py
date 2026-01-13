@@ -2,18 +2,17 @@ import re
 
 from langgraph.graph import StateGraph, START, END
 
-from agent.nodes.tool_runner import ToolRunnerNode
-from agent.nodes.tool_selector import ToolSelectorNode
+from .config import AgentConfig
 from .nodes import ChatNode, ToolSelectorNode, ToolRunnerNode
 from .state import AgentState
 
 
-def build_graph(args):
+def build_graph(config: AgentConfig):
     workflow = StateGraph(AgentState)
 
     # Add nodes
-    workflow.add_node("tool_selector", ToolSelectorNode(strategy=""))
-    workflow.add_node("chat", ChatNode(model=args.model, model_kwargs=args.model_kwargs))
+    workflow.add_node("tool_selector", ToolSelectorNode(strategy=config.tool_filter_strategy))
+    workflow.add_node("chat", ChatNode(model=config.model, model_kwargs=config.model_kwargs))
     workflow.add_node("tool_runner", ToolRunnerNode())
 
     # Add edges
@@ -21,7 +20,7 @@ def build_graph(args):
     workflow.add_edge("tool_selector", "chat")
     
     def decide_next_node(state: AgentState):
-        if len(state.tool_results) >= args.max_tool_call:
+        if len(state.tool_results) >= config.max_tool_call:
             return END
         messages = state.messages
         if not messages:
@@ -46,9 +45,8 @@ def build_graph(args):
 
 
 class RealFinAgent:
-    def __init__(self, args):
-        self.graph = build_graph(args)
-        pass
+    def __init__(self, config: AgentConfig):
+        self.graph = build_graph(config)
 
     def run(self, user_input: str):
         init_state = AgentState(
@@ -58,4 +56,4 @@ class RealFinAgent:
         )
         for state in self.graph.stream(init_state):
             pass
-        pass
+        return state
