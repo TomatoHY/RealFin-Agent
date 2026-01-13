@@ -1,23 +1,6 @@
-
-
 from .base import BaseNode
 from ..state import AgentState
-
-
-def select_necessary_tools(state: AgentState):
-    pass
-
-
-def select_optional_tools(state: AgentState):
-    pass
-
-
-def select_tools(strategy: str, state: AgentState):
-    select_func_dict = {
-        "necessary": select_necessary_tools,
-        "optional": select_optional_tools,
-    }
-    return select_func_dict[strategy](state)
+from ..tools import read_tool_desc, tool_selection_funcs
 
 
 class ToolSelectorNode(BaseNode):
@@ -27,8 +10,9 @@ class ToolSelectorNode(BaseNode):
     ):
         super().__init__("ToolSelector")
         self.strategy = strategy
-        self.tools = {}
+        self.tool_desc = read_tool_desc()
+        self.logger.info(f"Initialized {len(self.tool_desc)} tools.")
 
-    def __call__(self, state: AgentState):
-        state["tool_calls"] = select_tools(self.strategy, state)
-        pass
+    def run(self, state: AgentState):
+        state["tool_calls"] = tool_selection_funcs[self.strategy](state)
+        return state

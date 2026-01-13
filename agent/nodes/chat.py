@@ -9,7 +9,7 @@ class ChatNode(BaseNode):
         self.model = model
         self.model_kwargs = model_kwargs
 
-    def __call__(self, state: AgentState):
+    def run(self, state: AgentState):
         messages = state["messages"]
         # 带重试的调用LLM API
         pass
