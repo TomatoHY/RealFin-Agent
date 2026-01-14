@@ -17,9 +17,9 @@ class BaseNode(ABC):
     def __call__(self, state: AgentState) -> AgentState:
         self.logger.debug("Start")
         try:
-            state = self.run(state)
+            state_update = self.run(state)
         except Exception as e:
             self.logger.error(f"{e.__class__.__name__}: {str(e)}")
             raise e
         self.logger.debug("End")
-        return state
+        return state_update
