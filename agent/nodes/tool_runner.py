@@ -55,7 +55,7 @@ class ToolRunnerNode(BaseNode):
                     tool_result = self.tool_funcs[tool_name](**tool_args)
                 except Exception as e:
                     tool_result = f"{type(e).__name__}: {str(e)}"
-                function_call_str = f"{tool_name}({', '.join(f'{k}={v if not isinstance(v, str) else f"{v}"}' for k, v in tool_args.items())})"
+                function_call_str = f"{tool_name}({', '.join(f'{k}={v if not isinstance(v, str) else f"\'{v}\'"}' for k, v in tool_args.items())})"
                 self.logger.debug(f"Tool call: {function_call_str} = {tool_result}")
                 tool_results[function_call_str] = str(tool_result)
 
