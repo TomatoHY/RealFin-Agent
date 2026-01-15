@@ -1,0 +1,126 @@
+{
+  "tool_name": "get_last_n_trading_days",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "code",
+      "semantic_type": "identifier",
+      "description": "股票代码，必须包含交易所前缀，例如 'sh600519' 或 'sz000001'。如果提供代码，则无需提供名称。",
+      "required": false
+    },
+    {
+      "field": "name",
+      "semantic_type": "identifier",
+      "description": "股票的中文名称，例如 '贵州茅台'。'code' 和 'name' 至少需要提供一个。",
+      "required": false
+    },
+    {
+      "field": "n",
+      "semantic_type": "threshold",
+      "description": "要返回的最近交易日的数量。默认为 3。",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "option",
+      "description": "复权类型。'' 代表不复权, 'qfq' 代表前复权, 'hfq' 代表后复权。",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "option",
+      "description": "要查询的数据列名称。支持的列名: open, close, high, low, volume, amount 或对应的中文名称（开盘、收盘、最高、最低、成交量、成交额）。",
+      "enum": [
+        "open",
+        "close",
+        "high",
+        "low",
+        "volume",
+        "amount",
+        "开盘",
+        "收盘",
+        "最高",
+        "最低",
+        "成交量",
+        "成交额"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "trading_days",
+      "semantic_type": "list",
+      "description": "最近 n 个交易日的列表，每个交易日包含日期和对应的列值。按日期从新到旧排序（trading_days[0] 是最新交易日；trading_days[-1] 是这 n 个中最早的交易日）。若问题包含“\"N个交易日之前\"”：推荐调用本工具时令 n = N + 1，然后最靠前的日期对应的数值作为答案。"
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "解析后的股票标识符（代码）。"
+    },
+    {
+      "field": "error",
+      "semantic_type": "metadata",
+      "description": "如果发生错误，此字段包含错误信息。"
+    }
+  ],
+  "produces": [
+    "stock_price",
+    "market_data",
+    "trading_days"
+  ],
+  "consumes": [
+    "stock_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors with try-except blocks, returns error in result dict."
+  },
+  "examples": {
+    "parameter_template": {
+      "name": "贵州茅台",
+      "n": 3,
+      "adjust": "",
+      "column_label": "close"
+    },
+    "return_shape_example": {
+      "trading_days": [
+        {
+          "date": "2025-12-12",
+          "value": 1750.5
+        },
+        {
+          "date": "2025-12-11",
+          "value": 1748.2
+        },
+        {
+          "date": "2025-12-10",
+          "value": 1745.8
+        }
+      ],
+      "stock_identifier": "sh600519"
+    }
+  },
+  "lite_desc": "获取指定A股最近 n 个交易日的日期及对应的指定列值（如收盘价）",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "description": "【分类路径: 个体实体 > 股票 > 价格/行情】获取指定A股最近 n 个交易日的日期及对应的指定列值（例如收盘价、开盘价、最高价等）。返回的 trading_days 列表按日期从新到旧排序（第 1 个元素是最新交易日）。若问题包含“\"N个交易日之前\"”：按评测语义应理解为【最新交易日不计入】往前数 N 个交易日的那一天的值；推荐调用本工具时令 n = N + 1，然后取 trading_days[-1].value 作为答案（不要在列表中凭感觉挑某一项，也不要把它当作最近 N 个交易日窗口内的最大/最小值）。"
+}

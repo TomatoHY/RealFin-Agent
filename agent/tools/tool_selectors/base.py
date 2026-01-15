@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 import logging
+from abc import ABC, abstractmethod
 from typing import Dict
 
 
@@ -18,5 +18,5 @@ class BaseToolSelector(ABC):
         selected_tool_desc = self.select_tools(user_input, tool_desc, metadata)
         original_tool_count = len(tool_desc)
         selected_tool_count = len(selected_tool_desc)
-        self.logger.info(f"selected {selected_tool_count} tools out of {original_tool_count}: {selected_tool_desc.keys()}")
+        self.logger.info(f"Selected {selected_tool_count} tools out of {original_tool_count}: {selected_tool_desc.keys()}")
         return selected_tool_desc

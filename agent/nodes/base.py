@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import logging
 
-from ..state import AgentState
+from ..utils import AgentState
 
 
 class BaseNode(ABC):
@@ -21,5 +21,6 @@ class BaseNode(ABC):
         except Exception as e:
             self.logger.error(f"{e.__class__.__name__}: {str(e)}")
             raise e
+        self.logger.info(f"State update: {state_update}")
         self.logger.debug("End")
         return state_update

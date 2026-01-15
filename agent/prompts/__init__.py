@@ -1,1 +1,3 @@
-from .chat_prompt import CHAT_PROMPT
+from .system import SYSTEM_PROMPT
+from .tool import TOOL_PROMPT
+from .tool_results import TOOL_RESULTS_PROMPT

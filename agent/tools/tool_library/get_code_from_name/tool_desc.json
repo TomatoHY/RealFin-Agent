@@ -1,0 +1,67 @@
+{
+  "tool_name": "get_code_from_name",
+  "tool_role": "R0b: Symbol / Code Resolution",
+  "domain": [
+    "stock",
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "name",
+      "semantic_type": "entity",
+      "description": "要查询的股票的完整或部分名称。例如：'贵州茅台', '腾讯', 'Apple'。",
+      "required": false
+    },
+    {
+      "field": "market",
+      "semantic_type": "option",
+      "description": "指定搜索范围的股票市场。'a' 代表A股，'hk' 代表港股，'us' 代表美股。如果未提供此参数，默认为 'all'，将在所有市场中搜索。",
+      "enum": [
+        "a",
+        "hk",
+        "us",
+        "all"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code corresponding to the given stock name."
+    }
+  ],
+  "produces": [
+    "stock_code"
+  ],
+  "consumes": [
+    "stock_name",
+    "market_option"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Returns a message if the code is not found."
+  },
+  "examples": {
+    "parameter_template": {
+      "name": "Apple",
+      "market": "US"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "error": "Stock code not found for the given name and market."
+    }
+  },
+  "lite_desc": "根据股票的中文或英文名称，查找其对应的股票代码",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "search_kg"
+  ],
+  "description": "【分类路径: 个体实体 > 股票 > 档案/静态信息】根据股票的中文或英文名称，查找其对应的股票代码。支持在A股、港股、美股市场或所有市场中进行搜索。"
+}
