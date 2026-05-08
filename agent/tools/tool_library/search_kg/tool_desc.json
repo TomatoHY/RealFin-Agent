@@ -1,0 +1,133 @@
+{
+  "tool_name": "search_kg",
+  "tool_role": "R0a: Entity Grounding / Knowledge Resolution",
+  "domain": [
+    "generic"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "entity_name",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: entity_name | TYPE: string | ENUM: null | REQUIRED: true\nMEANING: ENTITY.NAME | 补充：当查询实体组（如'美股半导体三巨头'）时，返回结果的members字段包含所有成员实体，必须遍历该列表进行后续处理，禁止硬编码成员名称 | 注意：比较题需遍历全members再结论 | 注意：遍历后继续查日期并比较",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "id",
+      "semantic_type": "identifier",
+      "description": "Entity ID"
+    },
+    {
+      "field": "aliases",
+      "semantic_type": "list",
+      "description": "List of aliases"
+    },
+    {
+      "field": "description",
+      "semantic_type": "metadata",
+      "description": "Description of the entity"
+    },
+    {
+      "field": "region",
+      "semantic_type": "metadata",
+      "description": "Region of the entity"
+    },
+    {
+      "field": "count",
+      "semantic_type": "value",
+      "description": "Number of members"
+    },
+    {
+      "field": "members",
+      "semantic_type": "list",
+      "description": "List of members"
+    }
+  ],
+  "produces": [
+    "entity_record"
+  ],
+  "consumes": [
+    "entity_name",
+    "kg_file_path"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "entity_name": "AAPL",
+      "kg_file_path": "/data/financial_kg.json"
+    },
+    "return_shape_example": {
+      "id": "AAPL",
+      "aliases": [
+        "Apple Inc.",
+        "AAPL"
+      ],
+      "description": "Apple Inc. is an American multinational technology company that specializes in consumer electronics, software, and online services.",
+      "region": "US",
+      "count": 5,
+      "members": [
+        "Tim Cook",
+        "Luca Maestri",
+        "Jeff Williams",
+        "Katherine Adams",
+        "Eddy Cue"
+      ],
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The entity name provided does not exist in the knowledge graph."
+      }
+    }
+  },
+  "description": "SELECT ENTITY_MEMBERSHIP\nFROM GENERIC\nWHERE ENTITY = <entity_name>\n  AND KG_SOURCE = <kg_file_path>\n[CONSTRAINT] When the result contains a 'members' field, you MUST:\n1. Iterate through ALL members (not just the first one)\n2. Call price/data tools for EACH member separately\n3. When computing average: sum all values (treat None/failed as 0) THEN divide by result.count (total member count), NOT by number of successful fetches\n[EXAMPLE] For 三大运营商 (count=3): get prices for 中国移动, 中国电信, 中国联通 individually, then avg = (p1+p2+p3)/3",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_a_dividend_payout",
+    "get_a_stock_daily_price",
+    "get_a_stock_market_cap_top_n",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_announcement",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_hk_stock_basic_info",
+    "get_hk_stock_daily_price",
+    "get_income_statement",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_comment",
+    "get_stock_consensus_forecast",
+    "get_stock_detailed_metric_forecast",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stock_individual_basic_info_xq_value",
+    "get_stock_listing_date",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_stock_sse_deal_daily_value",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_top_10_shareholders",
+    "get_us_stock_daily_price",
+    "get_us_stock_map_by_exchange"
+  ]
+}

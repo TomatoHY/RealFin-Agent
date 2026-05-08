@@ -1,0 +1,124 @@
+{
+  "tool_name": "get_earnings_announcement",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "report_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "enum": [
+        "预告类型",
+        "业绩变动幅度",
+        "业绩变动原因",
+        "上年同期值",
+        "公告日期"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code of the company."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The name of the stock."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The report date in 'YYYYMMDD' format."
+    },
+    {
+      "field": "announcement_date",
+      "semantic_type": "time_range",
+      "description": "The date when the earnings announcement was made."
+    },
+    {
+      "field": "forecast_type",
+      "semantic_type": "metadata",
+      "description": "The type of forecast provided in the announcement."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "entity",
+      "description": "The item name that was requested."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the requested item."
+    }
+  ],
+  "produces": [
+    "earnings_announcement"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "report_date"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "report_date": "2023-09-30",
+      "item_name": "Net Income",
+      "name": "Apple",
+      "code": null
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "stock_name": "Apple",
+      "report_date": "2023-09-30",
+      "announcement_date": "2023-10-25",
+      "forecast_type": "Q3 Earnings",
+      "requested_item": "Net Income",
+      "value": 20500.0
+    }
+  },
+  "description": "SELECT EARNINGS_ANNOUNCEMENT.<预告类型|业绩变动幅度|业绩变动原因>\nFROM A_SHARE\nWHERE REPORT_DATE = <date>\n  AND ITEM = <预告类型|业绩变动幅度|业绩变动原因>\n  [AND IDENTIFY BY (NAME = <name> OR CODE = <code>)]",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_stock_comment",
+    "get_stock_consensus_forecast",
+    "get_stock_detailed_metric_forecast",
+    "search_kg"
+  ]
+}

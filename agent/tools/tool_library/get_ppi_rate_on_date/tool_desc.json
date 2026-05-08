@@ -1,0 +1,83 @@
+{
+  "tool_name": "get_ppi_rate_on_date",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "indicator_name",
+      "semantic_type": "metadata",
+      "description": "The name of the indicator, which is 'PPI年率'."
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "time_range",
+      "description": "The month that was queried, formatted as 'YYYY-MM'."
+    },
+    {
+      "field": "actual_date",
+      "semantic_type": "time_range",
+      "description": "The actual date of the data point returned, formatted as 'YYYY-MM'."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The PPI year-on-year rate value. Unit: percentage."
+    }
+  ],
+  "produces": [
+    "PPI_rate"
+  ],
+  "consumes": [
+    "query_date"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "query_date": "2023-09"
+    },
+    "return_shape_example": {
+      "indicator_name": "PPI年率",
+      "query_date": "2023-09",
+      "actual_date": "2023-09",
+      "value": "+3.45%"
+    }
+  },
+  "description": "SELECT REGIONAL_STATISTIC_VALUE\nFROM NBS\nWHERE METRIC = PPI_RATE_YOY\n  AND TIME = <query_date>",
+  "tool_alternative": [
+    "get_ppi_yearly_by_quarters"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

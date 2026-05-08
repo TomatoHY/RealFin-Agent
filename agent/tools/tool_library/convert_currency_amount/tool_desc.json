@@ -1,0 +1,111 @@
+{
+  "tool_name": "convert_currency_amount",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "forex"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "base_currency",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.BASE_CURRENCY",
+      "required": true
+    },
+    {
+      "field": "target_currency",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CURRENCY",
+      "required": true
+    },
+    {
+      "field": "amount",
+      "semantic_type": "dsl_slot",
+      "description": "AMOUNT.VALUE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "base_currency",
+      "semantic_type": "identifier",
+      "description": "Base currency code."
+    },
+    {
+      "field": "target_currency",
+      "semantic_type": "identifier",
+      "description": "Target currency code."
+    },
+    {
+      "field": "original_amount",
+      "semantic_type": "value",
+      "description": "Original amount before conversion."
+    },
+    {
+      "field": "converted_amount",
+      "semantic_type": "value",
+      "description": "Converted amount formatted to four decimal places."
+    },
+    {
+      "field": "exchange_rate",
+      "semantic_type": "value",
+      "description": "Exchange rate used for conversion."
+    },
+    {
+      "field": "rate_last_updated",
+      "semantic_type": "metadata",
+      "description": "Timestamp when the exchange rate was last updated, in ISO 8601 format."
+    }
+  ],
+  "produces": [
+    "converted_currency_amount"
+  ],
+  "consumes": [
+    "currency_code",
+    "amount"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns schema-compliant results."
+  },
+  "examples": {
+    "parameter_template": {
+      "base_currency": "USD",
+      "target_currency": "CNY",
+      "amount": 1000.0
+    },
+    "return_shape_example": {
+      "base_currency": "USD",
+      "target_currency": "CNY",
+      "original_amount": 1000.0,
+      "converted_amount": "6450.0000",
+      "exchange_rate": 6.45,
+      "rate_last_updated": "2023-10-05T14:30:00Z",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified currency code is not supported."
+      }
+    }
+  },
+  "description": "SELECT CONVERTED_AMOUNT\nFROM FOREX\nWHERE BASE_CURRENCY = <base_currency_code>\n  AND TARGET_CURRENCY = <target_currency_code>\n  AND AMOUNT = <monetary_amount>",
+  "tool_alternative": [
+    "get_fx_spot_quote_value",
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value"
+  ],
+  "tool_dependencies": [
+    "get_fx_spot_quote_value"
+  ],
+  "tool_related": [
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_fx_spot_quote_value"
+  ]
+}

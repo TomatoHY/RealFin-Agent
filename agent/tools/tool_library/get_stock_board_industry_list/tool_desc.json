@@ -1,0 +1,110 @@
+{
+  "tool_name": "get_stock_board_industry_list",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [],
+  "output_semantics": [
+    {
+      "field": "ranking",
+      "semantic_type": "value",
+      "description": "Ranking of the industry board"
+    },
+    {
+      "field": "board_name",
+      "semantic_type": "value",
+      "description": "Name of the industry board"
+    },
+    {
+      "field": "board_code",
+      "semantic_type": "identifier",
+      "description": "Code of the industry board"
+    },
+    {
+      "field": "latest_price",
+      "semantic_type": "value",
+      "description": "Latest price of the industry board"
+    },
+    {
+      "field": "price_change",
+      "semantic_type": "value",
+      "description": "Price change of the industry board"
+    },
+    {
+      "field": "price_change_percentage",
+      "semantic_type": "value",
+      "description": "Percentage string (e.g., '9.97%')"
+    },
+    {
+      "field": "total_market_value",
+      "semantic_type": "value",
+      "description": "Total market value of the industry board"
+    },
+    {
+      "field": "turnover_rate",
+      "semantic_type": "value",
+      "description": "Turnover rate of the industry board. Unit: percentage"
+    },
+    {
+      "field": "number_of_rising_stocks",
+      "semantic_type": "value",
+      "description": "Number of rising stocks in the industry board"
+    },
+    {
+      "field": "number_of_falling_stocks",
+      "semantic_type": "value",
+      "description": "Number of falling stocks in the industry board"
+    },
+    {
+      "field": "leading_stock",
+      "semantic_type": "value",
+      "description": "Leading stock in the industry board"
+    },
+    {
+      "field": "leading_stock_price_change_percentage",
+      "semantic_type": "value",
+      "description": "Percentage string (e.g., '9.97%')"
+    }
+  ],
+  "produces": [
+    "industry_board_data"
+  ],
+  "consumes": [],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except"
+  },
+  "examples": {
+    "parameter_template": {},
+    "return_shape_example": {
+      "ranking": 1,
+      "board_name": "Technology",
+      "board_code": "TECH",
+      "latest_price": 1500.75,
+      "price_change": 25.5,
+      "price_change_percentage": "+1.73%",
+      "total_market_value": 5000000000,
+      "turnover_rate": "2.45%",
+      "number_of_rising_stocks": 15,
+      "number_of_falling_stocks": 5,
+      "leading_stock": "AAPL",
+      "leading_stock_price_change_percentage": "+3.45%",
+      "error": {
+        "type": "empty_result",
+        "message": "No data available for the requested industry board."
+      }
+    }
+  },
+  "description": "SELECT INDUSTRY_BOARD_LIST\nFROM A_SHARE\nWHERE TRUE",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_stock_board_industry_cons"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "tool_name": "get_stock_basic_info",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "required": true
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": false
+    },
+    {
+      "field": "us_report_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.REPORT_TYPE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "股票代码"
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "公司名称 (仅适用于 A 股)"
+    },
+    {
+      "field": "market",
+      "semantic_type": "metadata",
+      "description": "市场类型 ('A-Share' 或 'US-Stock')"
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "数据来源 ('Basic Info' 或 'Financial Report - 资产负债表')"
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "报告日期 (仅适用于美股)"
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "查询的信息项"
+    }
+  ],
+  "produces": [
+    "stock_basic_info"
+  ],
+  "consumes": [
+    "stock_symbol",
+    "financial_report"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns empty on failure"
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "AAPL",
+      "item_name": "总资产",
+      "report_date": "2023-06-30",
+      "us_report_type": "年报"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "stock_name": "Apple Inc.",
+      "market": "US-Stock",
+      "data_source": "Financial Report - 资产负债表",
+      "report_date": "2023-06-30",
+      "requested_item": {
+        "name": "总资产",
+        "value": 350000000000,
+        "unit": "USD"
+      }
+    }
+  },
+  "description": "SELECT FINANCIAL_STATEMENT.ITEM.<item_name>\nFROM STOCK\nWHERE IDENTIFY BY SYMBOL = <symbol>\n  [AND REPORT_DATE = <report_date>]\n  [AND US_REPORT_TYPE = <us_report_type>]",
+  "tool_alternative": [
+    "get_hk_stock_basic_info",
+    "get_stock_basic_info_a"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_hk_stock_basic_info",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info_a",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

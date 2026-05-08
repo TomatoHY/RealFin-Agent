@@ -1,0 +1,118 @@
+{
+  "tool_name": "get_a_dividend_payout",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "report_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "Stock identifier, which may be the name or code."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The reporting period."
+    },
+    {
+      "field": "dividend_plan",
+      "semantic_type": "record",
+      "description": "Details of the dividend plan."
+    },
+    {
+      "field": "dividend_plan.description",
+      "semantic_type": "value",
+      "description": "Description of the dividend plan."
+    },
+    {
+      "field": "dividend_plan.implementation_date",
+      "semantic_type": "time_range",
+      "description": "The implementation date of the dividend plan."
+    },
+    {
+      "field": "dividend_plan.ex_dividend_date",
+      "semantic_type": "time_range",
+      "description": "The ex-dividend date."
+    }
+  ],
+  "produces": [
+    "dividend_information"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle exceptions internally."
+  },
+  "examples": {
+    "parameter_template": {
+      "report_date": "2023年报",
+      "name": "平安银行",
+      "code": "000001"
+    },
+    "return_shape_example": {
+      "stock_identifier": "000001",
+      "report_date": "2023年报",
+      "dividend_plan": {
+        "description": "每10股派发现金红利5.00元",
+        "implementation_date": "2024-05-15",
+        "ex_dividend_date": "2024-05-10"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The stock code provided does not exist."
+      }
+    }
+  },
+  "description": "SELECT DIVIDEND_PAYOUT_TIMING\nFROM A_SHARE\nWHERE REPORT_DATE = <YYYY-MM-DD>\n  [AND IDENTIFY BY (CODE = <stock_code> | NAME = <stock_name>)]",
+  "tool_alternative": [
+    "get_dividend_allotment_history"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

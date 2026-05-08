@@ -1,0 +1,134 @@
+{
+  "tool_name": "get_financial_indicators",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock",
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "report_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "enum": [
+        "BASIC_EPS",
+        "DILUTED_EPS",
+        "BPS",
+        "ROEJQ",
+        "XSMLL",
+        "XSJLL",
+        "ZCFZL",
+        "LD",
+        "SD",
+        "CHZZTS",
+        "YSZKZZTS",
+        "TOAZZL",
+        "TOTALOPERATEREVE",
+        "PARENTNETPROFIT",
+        "KCFJCXSYJLR",
+        "TOTALOPERATEREVETZ",
+        "PARENTNETPROFITTZ",
+        "KCFJCXSYJLRTZ"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock, either name or code."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The report date for the financial data."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the financial data."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "entity",
+      "description": "The name of the financial indicator."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the financial indicator. Null if not available."
+    }
+  ],
+  "produces": [
+    "financial_indicator_value"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "financial_indicator_name"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "report_date": "2023-09-30",
+      "item_name": "Net Profit",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_identifier": "AAPL",
+      "report_date": "2023-09-30",
+      "data_source": "NASDAQ",
+      "item_name": "Net Profit",
+      "value": 21000000000.0
+    }
+  },
+  "description": "SELECT FINANCIAL_INDICATOR.<BASIC_EPS|DILUTED_EPS|BPS|ROEJQ|XSMLL|XSJLL|ZCFZL|LD|SD|CHZZTS|YSZKZZTS|TOAZZL|TOTALOPERATEREVE|PARENTNETPROFIT|KCFJCXSYJLR|TOTALOPERATEREVETZ|PARENTNETPROFITTZ|KCFJCXSYJLRTZ>\nFROM A_SHARE\nWHERE REPORT_DATE = <YYYY-MM-DD>\n  [AND IDENTIFY BY (CODE = <code> OR NAME = <name>)]",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

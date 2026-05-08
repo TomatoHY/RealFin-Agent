@@ -1,0 +1,118 @@
+{
+  "tool_name": "get_stock_detailed_metric_forecast",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "metric_name",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.NAME",
+      "enum": [
+        "营业收入(元)",
+        "营业收入增长率",
+        "利润总额(元)",
+        "净利润(元)",
+        "净利润增长率",
+        "每股现金流(元)",
+        "每股净资产(元)",
+        "净资产收益率",
+        "市盈率(动态)"
+      ],
+      "required": true
+    },
+    {
+      "field": "year",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.YEAR",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock, either name or code."
+    },
+    {
+      "field": "forecast_year",
+      "semantic_type": "time_range",
+      "description": "The year for which the forecast is provided."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the forecast data, in this case, '详细财务指标预测 (同花顺)'."
+    },
+    {
+      "field": "requested_metric",
+      "semantic_type": "record",
+      "description": "The details of the requested metric forecast."
+    }
+  ],
+  "produces": [
+    "financial_forecast"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "metric_name": "净利润",
+      "year": 2024,
+      "name": null,
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_identifier": "AAPL",
+      "forecast_year": 2024,
+      "data_source": "详细财务指标预测 (同花顺)",
+      "requested_metric": {
+        "name": "净利润",
+        "value_type": "预测值",
+        "value": 95000.0,
+        "unit": "百万美元"
+      },
+      "error_example": {
+        "error_type": "invalid_parameter",
+        "message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT ANALYST_FORECAST.METRIC.<营业收入(元)|营业收入增长率|利润总额(元)|净利润(元)|净利润增长率|每股现金流(元)|每股净资产(元)|净资产收益率|市盈率(动态)>\nFROM A_SHARE\nWHERE METRIC = <metric_name>\n  AND YEAR = <year>\n  AND [IDENTIFY BY (CODE = <code> OR NAME = <name>)]",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_earnings_announcement",
+    "get_stock_comment",
+    "get_stock_consensus_forecast",
+    "search_kg"
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "tool_name": "get_stocks_history_dataframe",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "codes",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODES",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "code",
+      "semantic_type": "identifier",
+      "description": "Stock code with market prefix."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the stock record."
+    },
+    {
+      "field": "open",
+      "semantic_type": "value",
+      "description": "Opening price of the stock."
+    },
+    {
+      "field": "high",
+      "semantic_type": "value",
+      "description": "Highest price of the stock during the day."
+    },
+    {
+      "field": "low",
+      "semantic_type": "value",
+      "description": "Lowest price of the stock during the day."
+    },
+    {
+      "field": "close",
+      "semantic_type": "value",
+      "description": "Closing price of the stock."
+    },
+    {
+      "field": "volume",
+      "semantic_type": "value",
+      "description": "Trading volume of the stock in 10k shares."
+    }
+  ],
+  "produces": [
+    "historical_stock_data"
+  ],
+  "consumes": [
+    "stock_identifiers",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "codes": [
+        "AAPL",
+        "TSLA",
+        "0700.HK",
+        "000001"
+      ],
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31",
+      "adjust": ""
+    },
+    "return_shape_example": {
+      "code": "AAPL",
+      "date": "2023-01-15",
+      "open": 150.25,
+      "high": 155.0,
+      "low": 149.5,
+      "close": 154.3,
+      "volume": 3200,
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The stock code 'XYZ' is not recognized."
+      }
+    }
+  },
+  "description": "SELECT TIMESERIES.PRICE\nFROM A_SHARE\nWHERE IDENTIFY BY CODE = <codes>\n  AND DATE BETWEEN <start_date> AND <end_date>\n  AND ADJUST = <none|qfq|hfq>",
+  "tool_alternative": [
+    "get_multiple_index_history_df"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct_in_period",
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_multiple_index_history_df",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

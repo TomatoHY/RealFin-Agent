@@ -1,0 +1,78 @@
+{
+  "tool_name": "get_ppi_yearly_by_quarters",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "quarters",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.QUARTERS",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "value",
+      "description": "The month in 'YYYY-MM' format."
+    },
+    {
+      "field": "ppi_yoy",
+      "semantic_type": "value",
+      "description": "PPI year-over-year percentage. Percentage string (e.g., '9.97%')."
+    }
+  ],
+  "produces": [
+    "ppi_yoy_data"
+  ],
+  "consumes": [
+    "quarterly_time_range"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "quarters": [
+        "2023Q1",
+        "2023Q4"
+      ]
+    },
+    "return_shape_example": {
+      "date": "2023-03",
+      "ppi_yoy": "+3.45%",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided quarter format is incorrect. Expected format is 'YYYYQX'."
+      }
+    }
+  },
+  "description": "SELECT REGIONAL_STATISTIC_VALUE\nFROM NBS\nWHERE ENTITY = China\n  AND METRIC = producer_price_index_yoy\n  AND TIME IN quarters",
+  "tool_alternative": [
+    "get_ppi_rate_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_rate_on_date"
+  ]
+}

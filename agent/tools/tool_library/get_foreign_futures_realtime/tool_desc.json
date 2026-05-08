@@ -1,0 +1,115 @@
+{
+  "tool_name": "get_foreign_futures_realtime",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "commodity_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.COMMODITY_NAME",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "name",
+        "close",
+        "price_cny",
+        "change",
+        "change_percent",
+        "open",
+        "high",
+        "low",
+        "previous_settle",
+        "open_interest",
+        "bid",
+        "ask",
+        "time",
+        "date"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "commodity_name",
+      "semantic_type": "value",
+      "description": "The name of the commodity as recognized in the data source."
+    },
+    {
+      "field": "data_type",
+      "semantic_type": "metadata",
+      "description": "The type of data returned, which is 'latest_realtime'."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested data item with label and value."
+    },
+    {
+      "field": "realtime_quote",
+      "semantic_type": "record",
+      "description": "The latest real-time quote details for the commodity."
+    }
+  ],
+  "produces": [
+    "realtime_commodity_data"
+  ],
+  "consumes": [
+    "commodity_name",
+    "column_label"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "commodity_name": "Gold",
+      "column_label": "latest_price"
+    },
+    "return_shape_example": {
+      "commodity_name": "Gold",
+      "data_type": "latest_realtime",
+      "requested_item": {
+        "label": "latest_price",
+        "value": "1923.45"
+      },
+      "realtime_quote": {
+        "latest_price": 1923.45,
+        "price_cny": 12500.67,
+        "change_value": 15.3,
+        "change_percent": "+0.80%",
+        "open_price": 1908.15,
+        "high_price": 1930.0,
+        "low_price": 1905.5,
+        "previous_settle": 1908.15,
+        "quote_time": "2023-10-05"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified commodity name is not recognized."
+      }
+    }
+  },
+  "description": "SELECT REALTIME_QUOTE.<name|close|price_cny>\nFROM FUTURES\nWHERE COMMODITY = <commodity_name>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_futures_daily_price",
+    "get_futures_history",
+    "get_futures_price_on_date",
+    "get_sge_benchmark_price",
+    "get_sge_daily_data"
+  ]
+}

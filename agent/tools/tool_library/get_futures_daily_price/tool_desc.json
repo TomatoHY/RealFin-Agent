@@ -1,0 +1,132 @@
+{
+  "tool_name": "get_futures_daily_price",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "value",
+      "description": "交易日期，格式为 'YYYY-MM-DD'"
+    },
+    {
+      "field": "open",
+      "semantic_type": "value",
+      "description": "开盘价"
+    },
+    {
+      "field": "high",
+      "semantic_type": "value",
+      "description": "最高价"
+    },
+    {
+      "field": "low",
+      "semantic_type": "value",
+      "description": "最低价"
+    },
+    {
+      "field": "close",
+      "semantic_type": "value",
+      "description": "收盘价"
+    },
+    {
+      "field": "volume",
+      "semantic_type": "value",
+      "description": "成交量"
+    },
+    {
+      "field": "open_interest",
+      "semantic_type": "value",
+      "description": "持仓量"
+    },
+    {
+      "field": "turnover",
+      "semantic_type": "value",
+      "description": "成交额"
+    },
+    {
+      "field": "settle",
+      "semantic_type": "value",
+      "description": "结算价"
+    },
+    {
+      "field": "pre_settle",
+      "semantic_type": "value",
+      "description": "前结算价"
+    }
+  ],
+  "produces": [
+    "futures_daily_price_data"
+  ],
+  "consumes": [
+    "futures_contract_identifier",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks"
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "IF2109",
+      "start_date": "2023-09-01",
+      "end_date": "2023-09-30"
+    },
+    "return_shape_example": {
+      "date": "2023-09-15",
+      "open": 3500.5,
+      "high": 3550.75,
+      "low": 3480.25,
+      "close": 3525.0,
+      "volume": 150000,
+      "open_interest": 120000,
+      "turnover": 525000000.0,
+      "settle": 3520.0,
+      "pre_settle": 3510.0,
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided symbol 'XYZ123' is not valid."
+      }
+    }
+  },
+  "description": "SELECT COUNT TIMESERIES.DAILY_PRICE\nFROM FUTURES\nWHERE SYMBOL = <futures_symbol>\n  AND DATE BETWEEN <start_date> AND <end_date>",
+  "tool_alternative": [
+    "get_futures_history"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_futures_spread",
+    "get_foreign_futures_realtime",
+    "get_futures_history",
+    "get_futures_price_on_date",
+    "get_sge_benchmark_price",
+    "get_sge_daily_data"
+  ]
+}

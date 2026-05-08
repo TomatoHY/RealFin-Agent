@@ -1,0 +1,199 @@
+{
+  "tool_name": "get_a_stock_daily_price",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "open",
+        "close",
+        "high",
+        "low",
+        "volume"
+      ],
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST\n正例：qfq（例如计算“2023年全年涨幅”时，为避免复权口径不明导致与预期口径不一致，显式传入 adjust='qfq'）\n反例（错误做法）：''（空字符串占位；失败轨迹中将 adjust 传入 '' 导致复权口径不明确，可能触发默认口径与题目/参考解法期望的 qfq 不一致，从而使年度涨幅差值计算产生系统性偏差）",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START\n正例：2023-01-01（用于“2023年全年”区间计算时，显式填写起始日期）\n反例（错误做法）：与 end_date 不构成全年区间或留空/缺失（会导致区间不符合“2023年全年”的真实语义，从而影响涨幅差值）",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END\n正例：2023-12-31（用于“2023年全年”区间计算时，显式填写结束日期）\n反例（错误做法）：与 start_date 不构成全年区间或留空/缺失（会导致区间不符合“2023年全年”的真实语义，从而影响涨幅差值）",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    },
+    {
+      "field": "original_query",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ORIGINAL_QUERY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "result",
+      "semantic_type": "value",
+      "description": "The result of the query, which could be a stock price or a minimum value in a date range."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The resolved stock identifier, either a code or a name."
+    },
+    {
+      "field": "market",
+      "semantic_type": "metadata",
+      "description": "The market of the stock, e.g., 'A-Share'."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the queried data. Format: 'YYYY-MM-DD'."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item and its value."
+    },
+    {
+      "field": "min_value",
+      "semantic_type": "value",
+      "description": "The minimum value found in the specified date range, if applicable."
+    },
+    {
+      "field": "date_of_min_value",
+      "semantic_type": "time_range",
+      "description": "The date when the minimum value was found. Format: 'YYYY-MM-DD'."
+    },
+    {
+      "field": "query_type",
+      "semantic_type": "metadata",
+      "description": "The type of query performed, e.g., 'single_date', 'range_minimum'."
+    }
+  ],
+  "produces": [
+    "stock_price",
+    "market_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors with try-except blocks, does not raise exceptions."
+  },
+  "examples": [
+    {
+      "parameter_template": {
+        "column_label": "close",
+        "adjust": "qfq",
+        "query_date": "2023-10-01",
+        "start_date": "2023-09-01",
+        "end_date": "2023-09-30",
+        "name": "平安银行",
+        "code": "get_code_from_name(\"平安银行\", \"a\")"
+      },
+      "return_shape_example": {
+        "result": 15.23,
+        "stock_identifier": "000001",
+        "market": "A-Share",
+        "date": "2023-10-01",
+        "requested_item": {
+          "name": "close",
+          "value": 15.23
+        },
+        "min_value": 14.5,
+        "date_of_min_value": "2023-09-15",
+        "query_type": "single_date"
+      }
+    },
+    {
+      "parameter_template": {
+        "code": "sh600519",
+        "column_label": "close",
+        "adjust": "",
+        "query_date": "latest"
+      },
+      "return_shape_example": {
+        "result": 1426.0,
+        "stock_identifier": "sh600519",
+        "market": "A-Share",
+        "date": "2025-12-15 00:00:00",
+        "requested_item": {
+          "name": "close",
+          "value": 1426.0
+        }
+      }
+    }
+  ],
+  "description": "SELECT TIMESERIES.PRICE.<open|close|high|low|volume>\nFROM A_SHARE\nWHERE DATE_RANGE(start_date, end_date)\n  AND ADJUST = <\"\"|qfq|hfq>\n  AND QUERY_DATE = <date>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)",
+  "tool_alternative": [
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_price_change_pct",
+    "calculate_stock_price_range_in_period",
+    "get_a_stock_market_cap_top_n",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

@@ -1,0 +1,1892 @@
+
+======================================================================
+calculate_bond_yield_change_on_date
+Invalid output field: 收益率; Invalid output field: 前一日收益率; Invalid output field: 变化幅度
+
+======================================================================
+calculate_gold_forex_change
+Invalid output field: 变化百分比
+
+======================================================================
+calculate_lpr_rate_change
+Invalid output field: 开始数值; Invalid output field: 结束数值; Invalid output field: 变化
+
+======================================================================
+calculate_m2_supply_rate_change
+Invalid output field: 绝对变化
+
+======================================================================
+calculate_stock_price_range_in_period
+Invalid output field: start_date; Invalid output field: end_date; Invalid output field: adjust
+
+======================================================================
+analyze_index_performance
+  - OUTPUT_BINDING references non-existent field: count
+  - OUTPUT_BINDING references non-existent field: days
+  - OUTPUT_BINDING references non-existent field: status_text
+  - OUTPUT_BINDING references non-existent field: info
+
+Generated spec:
+[SLOTS]
+identifiers := identifiers
+start_date := start_date
+end_date := end_date
+pct_change_threshold_percent := pct_change_threshold_percent
+turnover_threshold_yuan := turnover_threshold_yuan
+
+[CONSTRAINTS]
+REQUIRED:
+- identifiers
+- start_date
+- end_date
+
+OPTIONAL:
+- pct_change_threshold_percent
+- 
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_in_basis_points
+  - OUTPUT_BINDING references non-existent field: current_yield_percent
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED: target_date
+OPTIONAL: curve_name, terms
+
+[TRIGGERS]
+if user asks for bond yield curve changes versus the previous trading day on the first available trading day from a specific calendar date and how m
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING references non-existent field: change_percent
+  - OUTPUT_BINDING references non-existent field: end_value
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days between two dates and wants cumulative change of gold reserves and foreign exchange reserves over that period -> set start_date=<"YYYY-MM-DD">, end_
+
+======================================================================
+calculate_index_change_pct_in_period
+  - OUTPUT_BINDING references non-existent field: cumulative_change_pct
+  - OUTPUT_BINDING references non-existent field: resolved_trading_dates
+
+Generated spec:
+[SLOTS]
+identifier := identifier
+start_date := start_date
+end_date := end_date
+market := market
+
+[CONSTRAINTS]
+REQUIRED: identifier, start_date, end_date
+OPTIONAL: market
+
+[TRIGGERS]
+if user asks for the cumulative percentage change of a single index over a period and wants to know how many days bet
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING references non-existent field: change_in_basis_points
+  - OUTPUT_BINDING references non-existent field: end_rate_percent
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+OPTIONAL:
+ENUMS:
+- indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> a spec
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 绝对变化
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days between two dates and wants the change in China's M2 money supply year-on-year rate over that period -> set start_date=<"YYYY-MM-DD">, end_date=<"YY
+
+======================================================================
+calculate_price_change_pct
+  - TRIGGERS placeholder drift: <market> matches param name
+
+Generated spec:
+[SLOTS]
+query_date := query_date
+market := market
+adjust := adjust
+name := name
+code := code
+original_query := original_query
+
+[CONSTRAINTS]
+REQUIRED:
+- query_date
+- market
+- adjust
+- original_query
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- market: ['a', 'hk', 'us']
+- adjust: ['', 'qfq', 'hfq']
+
+[TRIGGERS]
+
+======================================================================
+calculate_price_change_pct_in_period
+  - TRIGGERS placeholder drift: <market> matches param name
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+market := market
+adjust := adjust
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+- market
+- adjust
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- market: ['a', 'hk', 'us']
+- adjust: ['qfq', 'hfq', '']
+
+[TRIGGERS]
+if user asks how 
+
+======================================================================
+calculate_stock_price_range_in_period
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+adjust := adjust
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: start_date, end_date, adjust
+OPTIONAL: name, code
+ENUMS:
+  adjust: '', 'qfq', 'hfq'
+
+[TRIGGERS]
+if user asks over how many days between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> a specif
+
+======================================================================
+get_a_dividend_payout
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_date := report_date
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- report_date
+
+OPTIONAL:
+- name
+- code
+
+[TRIGGERS]
+if user asks for the number of days associated with a specific A-share financial report date <"YYYY-MM-DD"> and wants that company's dividend payout plan text -> s
+
+======================================================================
+get_a_stock_daily_price
+  - Missing required section: [OUTPUT_BINDING]
+  - CALL_TEMPLATE missing required param: original_query
+  - TRIGGERS placeholder drift: <column_label> matches param name
+
+Generated spec:
+[SLOTS]
+column_label := column_label
+adjust := adjust
+query_date := query_date
+start_date := start_date
+end_date := end_date
+original_query := original_query
+
+[CONSTRAINTS]
+REQUIRED:
+- column_label
+- adjust
+- query_date
+- start_date
+- end_date
+- original_query
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- colu
+
+======================================================================
+get_currency_rate_on_date
+  - TRIGGERS placeholder drift: <currency_name> matches param name
+
+Generated spec:
+[SLOTS]
+currency_name := currency_name
+query_date := query_date
+actual_date := actual_date
+value := value
+
+[CONSTRAINTS]
+REQUIRED:
+- currency_name
+- query_date
+
+[TRIGGERS]
+if user asks for the number of days between <"YYYY-MM-DD"> and the most recent available RMB exchange rate midpoint for a specif
+
+======================================================================
+get_dividend_allotment_history
+  - Missing required section: [TRIGGERS]
+  - Missing required section: [CALL_TEMPLATE]
+  - Missing required section: [OUTPUT_BINDING]
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED:
+- report_period
+- column_label
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- column_label: ['送转股份-
+
+======================================================================
+get_earnings_report_summary
+  - TRIGGERS placeholder drift: <column_label> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+date := date
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: date, column_label
+OPTIONAL: name, code
+ENUMS:
+column_label: ['每股收益', '营业总收入-营业总收入', '营业总收入-同比增长']
+
+[TRIGGERS]
+if user asks how many days around a specific A-share earnings report date and also reque
+
+======================================================================
+get_forex_price_on_date
+  - OUTPUT_BINDING references non-existent field: actual_date_of_quote
+  - OUTPUT_BINDING references non-existent field: error_info
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+query_date := query_date
+
+[CONSTRAINTS]
+REQUIRED: symbol, query_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks for the forex rate of a single currency pair on a specific date and wants to know how many days back from that date the latest available quote comes -> set symbol=<forex_s
+
+======================================================================
+get_fx_spot_quote_value
+  - OUTPUT_BINDING references non-existent field: full_quote_value
+
+Generated spec:
+[SLOTS]
+currency_pair := currency_pair
+metric_name := metric_name
+
+[CONSTRAINTS]
+REQUIRED:
+- currency_pair
+- metric_name
+OPTIONAL:
+ENUMS:
+- metric_name: ['买报价', '卖报价']
+
+[TRIGGERS]
+if user asks how many days a specific FX spot quote side has been available for a given currency pair -> set currency_pa
+
+======================================================================
+get_gold_forex_reserves
+  - OUTPUT_BINDING references non-existent field: series_of_gold_reserve_values
+  - OUTPUT_BINDING references non-existent field: series_of_statistical_dates
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+ENUMS:
+- indicator_name: 黄金储备, 国家外汇储备
+
+[TRIGGERS]
+if user asks how many days of China's monthly gold or national foreign exchange reserves data are nee
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: item_name
+OPTIONAL: name, code
+ENUMS:
+item_name: comunic, comcnname, comenname
+
+[TRIGGERS]
+if user asks how many days a specific Hong Kong stock has been trading and also wants its company profile details (such as Chin
+
+======================================================================
+get_hk_stock_daily_price
+  - Missing required section: [OUTPUT_BINDING]
+
+Generated spec:
+[SLOTS]
+column_label := column_label
+adjust := adjust
+query_date := query_date
+start_date := start_date
+end_date := end_date
+code := code
+
+[CONSTRAINTS]
+REQUIRED: column_label, adjust, query_date, start_date, end_date, original_query
+OPTIONAL: name, code
+ENUMS:
+column_label: ['open', 'high', 'low']
+
+
+======================================================================
+get_income_statement
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+date := date
+item_name := item_name
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED:
+- date
+- item_name
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- item_name: ['净利润', '净利润同比', '营业总收入']
+
+[TRIGGERS]
+if user asks how many days a specific A-share financial reporting period covers and wants the correspo
+
+======================================================================
+get_index_history
+  - OUTPUT_BINDING references non-existent field: index_price_value
+  - OUTPUT_BINDING references non-existent field: trading_date
+
+Generated spec:
+[SLOTS]
+identifier := identifier
+column_label := column_label
+query_date := query_date
+start_date := start_date
+end_date := end_date
+market := market
+
+[CONSTRAINTS]
+REQUIRED: identifier, column_label, query_date, start_date, end_date, market, original_query
+OPTIONAL:
+ENUMS:
+  column_label: ['open', 
+
+======================================================================
+get_last_n_trading_days
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+n := n
+adjust := adjust
+column_label := column_label
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED: n, adjust, column_label
+OPTIONAL: code, name, select_index
+ENUMS:
+- adjust: ['', 'qfq', 'hfq']
+- column_label: ['open', 'close', 'high']
+
+[TRIGGERS]
+if user asks for the last <num_trading_
+
+======================================================================
+get_lpr_rate
+  - OUTPUT_BINDING uses Chinese field name: 历史利率数值序列
+  - OUTPUT_BINDING uses Chinese field name: 历史日期序列
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+OPTIONAL:
+ENUMS:
+indicator_name: LPR1Y, LPR5Y, RATE_1
+
+[TRIGGERS]
+if user asks how many days of historical LPR or related loan rates are needed between
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+target_label := target_label
+target_time := target_time
+region := region
+
+[CONSTRAINTS]
+REQUIRED:
+- kind
+- path
+- period
+- target_label
+- target_time
+
+OPTIONAL:
+- region
+- indicator
+
+ENUMS:
+- kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+[TRIGGERS]
+if user 
+
+======================================================================
+get_ppi_yearly_by_quarters
+  - OUTPUT_BINDING references non-existent field: ppi_yoy_values
+  - OUTPUT_BINDING references non-existent field: dates
+
+Generated spec:
+[SLOTS]
+quarters := quarters
+
+[CONSTRAINTS]
+REQUIRED: quarters
+OPTIONAL: 
+
+[TRIGGERS]
+if user asks how many days of monthly year-over-year PPI data fall within specified quarters -> set quarters=<ppi_quarters>
+
+[CALL_TEMPLATE]
+get_ppi_yearly_by_quarters(
+  quarters=<ppi_quarters>
+)
+
+[OUTPUT_BINDING]
+
+======================================================================
+get_rmb_central_parity_rate_change
+  - TRIGGERS placeholder drift: <currencies> matches param name
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+currencies := currencies
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+- currencies
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days of daily percentage change for one or more foreign currencies against RMB between <"YYYY-MM-DD"> and <"YYYY-MM
+
+======================================================================
+get_stock_basic_info
+  - CALL_TEMPLATE optional param 'report_date' must use <optional_...> placeholder, not <"YYYY-MM-DD">
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+item_name := item_name
+report_date := report_date
+us_report_type := us_report_type
+
+[CONSTRAINTS]
+REQUIRED: symbol, item_name
+OPTIONAL: report_date, us_report_type
+
+[TRIGGERS]
+if user asks how many days a stock’s financial reporting period covers and wants the numeric value 
+
+======================================================================
+get_stock_basic_info_a
+  - First TRIGGER missing count-days anchor (should include 'number of days'/'count'/'how many days')
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+item_name := item_name
+
+[CONSTRAINTS]
+REQUIRED:
+- symbol
+- item_name
+
+OPTIONAL:
+
+ENUMS:
+- item_name: ['最新', '股票代码', '股票简称']
+
+[TRIGGERS]
+if user requests a single basic information field (最新 / 股票代码 / 股票简称) for a specific A股股票 symbol -> set symbol=<stock_symbol>, item_name=<re
+
+======================================================================
+get_stock_board_industry_cons
+  - OUTPUT_BINDING uses Chinese field name: list_of_最新价_values
+  - OUTPUT_BINDING references non-existent field: list_of_code_values
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+
+[CONSTRAINTS]
+REQUIRED:
+- symbol
+OPTIONAL:
+
+[TRIGGERS]
+if user wants to monitor over a number of days the stocks contained in a specific industry board and provides the board identifier -> set symbol=<industry_board_symbol>
+
+[CALL_TEMPLATE]
+get_stock_board_industry_cons(
+  
+
+======================================================================
+get_stock_comment
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- column_label
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- column_label: ['最新价', '涨跌幅', '换手率']
+
+[TRIGGERS]
+if user asks, for a single A-share, on the latest trading day, how many days of market opinion are summarized in a
+
+======================================================================
+get_stock_detailed_metric_forecast
+  - TRIGGERS placeholder drift: <metric_name> matches param name
+
+Generated spec:
+[SLOTS]
+metric_name := metric_name
+year := year
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: metric_name, year
+OPTIONAL: name, code
+ENUMS:
+- metric_name: '营业收入(元)', '营业收入增长率', '利润总额(元)'
+
+[TRIGGERS]
+if user asks how many days analyst forecasts exist for a specific financial metric in a future y
+
+======================================================================
+get_stock_hist_price_data
+  - TRIGGERS placeholder drift: <period> matches param name
+
+Generated spec:
+[SLOTS]
+query_date := query_date
+period := period
+start_date := start_date
+end_date := end_date
+adjust := adjust
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- query_date
+- period
+- start_date
+- end_date
+- adjust
+
+OPTIONAL:
+- code
+- name
+
+ENUMS:
+- period: ['daily', 'weekly', 'monthly']
+- adjust: ['', 'qfq'
+
+======================================================================
+get_stock_sse_deal_daily_value
+  - OUTPUT_BINDING references non-existent field: requested_item_value
+  - OUTPUT_BINDING references non-existent field: trading_date_returned
+
+Generated spec:
+[SLOTS]
+date := date
+row_label := row_label
+column_label := column_label
+
+[CONSTRAINTS]
+REQUIRED:
+- date
+- row_label
+- column_label
+
+OPTIONAL:
+
+ENUMS:
+- row_label: 挂牌数, 市价总值, 流通市值
+- column_label: 股票, 主板A, 主板B
+
+[TRIGGERS]
+if user asks for Shanghai Stock Exchange stock trading overview on a specific t
+
+======================================================================
+get_sw_index_third_cons
+  - OUTPUT_BINDING references non-existent field: stock_prices
+  - OUTPUT_BINDING references non-existent field: stock_codes
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+
+[CONSTRAINTS]
+REQUIRED: symbol
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days constituent stocks have been included in a specific Shenwan level-3 industry and provides an industry identifier -> set symbol=<sw_level3_industry_symbol>
+if user requests the full list of const
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_basis_points
+  - OUTPUT_BINDING references non-existent field: yield_percentages
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED:
+- target_date
+
+OPTIONAL:
+- curve_name
+- terms
+
+[TRIGGERS]
+if user asks how many days or to count trading days relative to a specific date in order to get bond yield curve levels and their changes in b
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING references non-existent field: change_percentage
+  - OUTPUT_BINDING references non-existent field: indicator_name
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+
+[TRIGGERS]
+if user asks how many days of cumulative change in gold reserves and foreign exchange reserves between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> -> set start_date=<"YYYY-MM-DD">, end_date=<"YYY
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING references non-existent field: change_in_basis_points
+  - OUTPUT_BINDING references non-existent field: ending_rate_percent
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- indicator_name
+- start_date
+- end_date
+OPTIONAL:
+ENUMS:
+- indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days a specified LPR or loan rate indicator chang
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING references non-existent field: absolute_change_percentage_points
+  - OUTPUT_BINDING references non-existent field: end_date
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks for how many days of change in China's M2 money supply year-on-year rate between a start date and an end date -> set start_date=<"YYYY-MM-DD">, end_date=<"YYYY-MM
+
+======================================================================
+calculate_price_change_pct_in_period
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+market := market
+adjust := adjust
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+- market
+- adjust
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- market: ['a', 'hk', 'us']
+- adjust: ['qfq', 'hfq', '']
+
+[TRIGGERS]
+if user asks for 
+
+======================================================================
+get_a_dividend_payout
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_date := report_date
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: report_date
+OPTIONAL: name, code
+
+[TRIGGERS]
+if user asks how many days between a specific financial report_date and the dividend implementation or ex-dividend date for an A-share listed company -> set report_date=
+
+======================================================================
+get_dividend_allotment_history
+  - TRIGGERS placeholder drift: <report_period> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED: report_period, column_label
+OPTIONAL: name, code
+ENUMS:
+- column_label: ['送转股份-送转总比例', '送转股份-送股比例', '送转股份-转股比例']
+
+[TRIGGERS]
+if user asks how many days related to a specific financi
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: item_name
+OPTIONAL: name, code
+ENUMS: item_name in ['comunic', 'comcnname', 'comenname']
+
+[TRIGGERS]
+if user asks for how many days a specific Hong Kong stock has existed or been listed and also wants its company profi
+
+======================================================================
+get_hk_stock_daily_price
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+column_label := column_label
+adjust := adjust
+query_date := query_date
+start_date := start_date
+end_date := end_date
+code := code
+
+[CONSTRAINTS]
+REQUIRED: column_label, adjust, query_date, start_date, end_date, original_query
+OPTIONAL: name, code
+ENUMS:
+- column_label: ['open', 'high', 'low'
+
+======================================================================
+get_income_statement
+  - TRIGGERS placeholder drift: <item_name> matches param name
+
+Generated spec:
+[SLOTS]
+date := date
+item_name := item_name
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED: date, item_name
+OPTIONAL: name, code
+ENUMS:
+item_name: 净利润, 净利润同比, 营业总收入
+
+[TRIGGERS]
+if user asks how many days until or since a specific A-share financial report date to retrieve a profit-statement item a
+
+======================================================================
+get_last_n_trading_days
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+n := n
+adjust := adjust
+column_label := column_label
+code := code
+name := name
+select_index := select_index
+
+[CONSTRAINTS]
+REQUIRED:
+- n
+- adjust
+- column_label
+OPTIONAL:
+- code
+- name
+- select_index
+ENUMS:
+- adjust: ['', 'qfq', 'hfq']
+- column_label: ['open', 'close', 'high']
+
+[TRIGGERS]
+if
+
+======================================================================
+get_lpr_rate
+  - TRIGGERS placeholder drift: <indicator_name> matches param name
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+OPTIONAL:
+ENUMS: indicator_name ∈ ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days of LPR or related loan rate data are available be
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+target_label := target_label
+target_time := target_time
+region := region
+
+[CONSTRAINTS]
+REQUIRED:
+- kind
+- path
+- period
+- target_label
+- target_time
+
+OPTIONAL:
+- region
+- indicator
+
+ENUMS:
+- kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+kind 是表类型（如“分省季度数据”
+
+======================================================================
+get_rmb_central_parity_rate_change
+  - TRIGGERS placeholder drift: <currencies> matches param name
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+currencies := currencies
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+- currencies
+
+OPTIONAL:
+
+[TRIGGERS]
+if user asks for how many days of daily percentage changes in RMB central parity rates between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> for spe
+
+======================================================================
+get_stock_basic_info_a
+  - OUTPUT_BINDING references non-existent field: requested_field_value
+  - OUTPUT_BINDING references non-existent field: data_source_name
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+item_name := item_name
+
+[CONSTRAINTS]
+REQUIRED:
+- symbol
+- item_name
+OPTIONAL:
+
+ENUMS:
+item_name: ['最新', '股票代码', '股票简称']
+
+[TRIGGERS]
+if user asks how many days they have held a specific mainland China A-share stock and you need its basic identifier field to assist -> set sym
+
+======================================================================
+get_stock_hist_price_data
+  - TRIGGERS placeholder drift: <period> matches param name
+
+Generated spec:
+[SLOTS]
+query_date := query_date
+period := period
+start_date := start_date
+end_date := end_date
+adjust := adjust
+code := code
+
+[CONSTRAINTS]
+REQUIRED: query_date, period, start_date, end_date, adjust
+OPTIONAL: code, name
+ENUMS:
+period: ['daily', 'weekly', 'monthly']
+adjust: ['', 'qfq', 'hfq']
+
+[TRIG
+
+======================================================================
+get_stock_sse_deal_daily_value
+  - OUTPUT_BINDING references non-existent field: requested_metric_value
+  - OUTPUT_BINDING references non-existent field: market_category
+
+Generated spec:
+[SLOTS]
+date := date
+row_label := row_label
+column_label := column_label
+
+[CONSTRAINTS]
+REQUIRED:
+- date
+- row_label
+- column_label
+
+OPTIONAL:
+
+ENUMS:
+- row_label: ['挂牌数', '市价总值', '流通市值']
+- column_label: ['股票', '主板A', '主板B']
+
+[TRIGGERS]
+if user requests SSE stock trading metrics for exactly one trad
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_basis_points_list
+  - OUTPUT_BINDING references non-existent field: yield_percent_list
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED:
+- target_date
+OPTIONAL:
+- curve_name
+- terms
+
+[TRIGGERS]
+if user asks how many days of changes in a government bond yield curve around a specific trading date, or requests that date’s yields and their
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING references non-existent field: percentage_change_values
+  - OUTPUT_BINDING references non-existent field: indicator_names
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: start_date, end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days of gold reserve and forex reserve changes between two dates -> set start_date=<"YYYY-MM-DD">, end_date=<"YYYY-MM-DD">
+
+[CALL_TEMPLATE]
+calculate_gold_f
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 变化
+  - OUTPUT_BINDING uses Chinese field name: 结束数值
+  - TRIGGERS placeholder drift: <indicator_name> matches param name
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+OPTIONAL:
+ENUMS:
+- indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days of LPR or loan rate change between <"YYYY-MM-DD"
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 绝对变化
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: start_date, end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days between two dates and wants the change in China M2 money supply year-on-year rate over that period -> set start_date=<"YYYY-MM-DD">, end_date=<"YYYY-MM
+
+======================================================================
+get_dividend_allotment_history
+  - TRIGGERS placeholder drift: <report_period> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: report_period, column_label
+OPTIONAL: name, code
+ENUMS:
+- column_label: ['送转股份-送转总比例', '送转股份-送股比例', '送转股份-转股比例']
+
+[TRIGGERS]
+if user asks, for a specific A-share stock code and repo
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- item_name
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- item_name: ['comunic', 'comcnname', 'comenname']
+
+[TRIGGERS]
+if user asks how many days a specific Hong Kong stock has been listed or existed and also requests its basic c
+
+======================================================================
+get_income_statement
+  - TRIGGERS placeholder drift: <item_name> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+date := date
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: date, item_name
+OPTIONAL: name, code
+ENUMS:
+- item_name: ['净利润', '净利润同比', '营业总收入']
+
+[TRIGGERS]
+if user asks how many days relative to a specific financial report date while requesting an A-share company's 
+
+======================================================================
+get_lpr_rate
+  - OUTPUT_BINDING references non-existent field: daily_rate_values
+  - OUTPUT_BINDING references non-existent field: dates
+  - TRIGGERS placeholder drift: <indicator_name> matches param name
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+ENUMS:
+- indicator_name: LPR1Y, LPR5Y, RATE_1
+
+[TRIGGERS]
+if user asks how many days a specific LPR or related loan rate has historical data between tw
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+region := region
+target_label := target_label
+target_time := target_time
+
+[CONSTRAINTS]
+REQUIRED: kind, path, period, target_label, target_time
+OPTIONAL: region, indicator
+ENUMS:
+  kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+[TRIGGERS]
+if user asks for ho
+
+======================================================================
+get_stock_basic_info_a
+  - First TRIGGER missing count-days anchor (should include 'number of days'/'count'/'how many days')
+
+Generated spec:
+[SLOTS]
+symbol := symbol
+item_name := item_name
+stock_code := stock_code
+stock_name := stock_name
+requested_item := requested_item
+
+[CONSTRAINTS]
+REQUIRED:
+- symbol
+- item_name
+OPTIONAL:
+ENUMS:
+- item_name: ['最新', '股票代码', '股票简称']
+
+[TRIGGERS]
+if user requests a specific basic information field (such 
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_in_basis_points
+  - OUTPUT_BINDING references non-existent field: current_yield_percent
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED:
+- target_date
+
+OPTIONAL:
+- curve_name
+- terms
+
+[TRIGGERS]
+if user asks how many days of yield change to compute for a specified bond yield curve date compared with the previous trading day -> set targ
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING uses Chinese field name: 变化百分比
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days of change in gold reserves and national foreign exchange reserves between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> -> set start_date=<"YYYY-MM-DD">, end_da
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 变化
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- indicator_name
+- start_date
+- end_date
+OPTIONAL:
+ENUMS:
+- indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days a specific Chinese LPR or benchmark loan rat
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING references non-existent field: absolute_change_percentage_points
+  - OUTPUT_BINDING references non-existent field: end_value
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> are considered when measuring the change in China's M2 money supply year-on-year rate -> set start_date=<"
+
+======================================================================
+get_dividend_allotment_history
+  - TRIGGERS placeholder drift: <report_period> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- report_period
+- column_label
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- column_label: ['送转股份-送转总比例', '送转股份-送股比例', '送转股份-转股比例']
+
+[TRIGGERS]
+if user asks how many days a historical dividend
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: item_name
+OPTIONAL: name, code
+ENUMS: item_name=['comunic', 'comcnname', 'comenname']
+
+[TRIGGERS]
+if user asks for how many days they have held a specific Hong Kong stock and also wants its basic company profile or ove
+
+======================================================================
+get_income_statement
+  - TRIGGERS placeholder drift: <item_name> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+date := date
+item_name := item_name
+code := code
+name := name
+
+[CONSTRAINTS]
+REQUIRED: date, item_name
+OPTIONAL: name, code
+ENUMS:
+item_name: ['净利润', '净利润同比', '营业总收入']
+
+[TRIGGERS]
+if user asks how many days until or since a specific A股财报报告日并想获取该日某只股票利润表中的科目金额（如净利润或营业总收入）且以代码标识股票 -> set date=
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS placeholder drift: <kind> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+region := region
+target_label := target_label
+target_time := target_time
+
+[CONSTRAINTS]
+REQUIRED:
+- kind
+- path
+- period
+- target_label
+- target_time
+
+OPTIONAL:
+- region
+- indicator
+
+ENUMS:
+- kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+[TRIGGERS]
+if user 
+
+======================================================================
+get_stock_sse_deal_daily_value
+  - OUTPUT_BINDING references non-existent field: requested_item_value
+
+Generated spec:
+[SLOTS]
+date := date
+row_label := row_label
+column_label := column_label
+
+[CONSTRAINTS]
+REQUIRED:
+- date
+- row_label
+- column_label
+
+OPTIONAL:
+
+ENUMS:
+- row_label: ['挂牌数', '市价总值', '流通市值']
+- column_label: ['股票', '主板A', '主板B']
+
+[TRIGGERS]
+if user asks for the number of days or to count trading days wi
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_basis_points
+  - OUTPUT_BINDING references non-existent field: yield_percent
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED: target_date
+OPTIONAL: curve_name, terms
+
+[TRIGGERS]
+if user asks how many days of bond yield change statistics to compute for a specific valuation date compared with the previous trading day -> set ta
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING uses Chinese field name: 变化百分比列表
+  - OUTPUT_BINDING uses Chinese field name: 结束数值列表
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: start_date, end_date
+OPTIONAL: 
+
+[TRIGGERS]
+if user asks how many days between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> are used to evaluate cumulative changes in gold reserves and national foreign exchange reserves -> set start
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 变化
+  - OUTPUT_BINDING uses Chinese field name: 结束数值
+  - TRIGGERS placeholder drift: <indicator_name> matches param name
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: indicator_name, start_date, end_date
+OPTIONAL:
+ENUMS:
+indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks for LPR or historical loan rate change over a period and mention
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 绝对变化
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED: start_date, end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks over how many days or between which dates to measure the change in China M2 M2货币供应年率 between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> -> set start_date=<"YYYY-MM-DD">, end_
+
+======================================================================
+get_dividend_allotment_history
+  - TRIGGERS placeholder drift: <report_period> matches param name
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: report_period, column_label
+OPTIONAL: name, code
+ENUMS:
+- column_label: ['送转股份-送转总比例', '送转股份-送股比例', '送转股份-转股比例']
+
+[TRIGGERS]
+if user asks, for a specific A-share stock and report pe
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: item_name
+OPTIONAL: name, code
+ENUMS:
+- item_name: comunic, comcnname, comenname
+
+[TRIGGERS]
+if user discusses how many days they have held or traded a specific Hong Kong stock and now wants one particular company prof
+
+======================================================================
+get_income_statement
+  - TRIGGERS placeholder drift: <item_name> matches param name
+
+Generated spec:
+[SLOTS]
+date := date
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: date, item_name
+OPTIONAL: name, code
+ENUMS:
+- item_name: ['净利润', '净利润同比', '营业总收入']
+
+[TRIGGERS]
+if user asks how many days of an A-share company's net profit, net profit YoY, or total operating revenue are 
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+region := region
+target_label := target_label
+target_time := target_time
+
+[CONSTRAINTS]
+REQUIRED: kind, path, period, target_label, target_time
+OPTIONAL: region, indicator
+ENUMS:
+kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+[TRIGGERS]
+if user asks how many
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_in_basis_points
+  - OUTPUT_BINDING references non-existent field: bond_terms
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED:
+- target_date
+OPTIONAL:
+- curve_name
+- terms
+
+[TRIGGERS]
+if user asks how many days between a specified target date and its previous trading day when checking government bond yield curve changes on th
+
+======================================================================
+calculate_gold_forex_change
+  - OUTPUT_BINDING references non-existent field: percentage_changes
+  - OUTPUT_BINDING references non-existent field: end_values
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days of cumulative change in national gold reserves and foreign exchange reserves between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> -> set start_date=<"YYYY-MM-D
+
+======================================================================
+calculate_lpr_rate_change
+  - OUTPUT_BINDING references non-existent field: basis_point_change
+  - OUTPUT_BINDING references non-existent field: end_date
+
+Generated spec:
+[SLOTS]
+indicator_name := indicator_name
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- indicator_name
+- start_date
+- end_date
+
+OPTIONAL:
+
+ENUMS:
+- indicator_name: ['LPR1Y', 'LPR5Y', 'RATE_1']
+
+[TRIGGERS]
+if user asks how many days between two dates a specific Chinese LPR o
+
+======================================================================
+calculate_m2_supply_rate_change
+  - OUTPUT_BINDING uses Chinese field name: 绝对变化
+
+Generated spec:
+[SLOTS]
+start_date := start_date
+end_date := end_date
+
+[CONSTRAINTS]
+REQUIRED:
+- start_date
+- end_date
+OPTIONAL:
+
+[TRIGGERS]
+if user asks how many days between <"YYYY-MM-DD"> and <"YYYY-MM-DD"> are used to measure the change in China M2 money supply year-on-year rate -> set start_date=<"YYYY-MM-DD">
+
+======================================================================
+get_dividend_allotment_history
+  - TRIGGERS placeholder drift: <report_period> matches param name
+
+Generated spec:
+[SLOTS]
+report_period := report_period
+column_label := column_label
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED:
+- report_period
+- column_label
+
+OPTIONAL:
+- name
+- code
+
+ENUMS:
+- column_label: ['送转股份-送转总比例', '送转股份-送股比例', '送转股份-转股比例']
+
+[TRIGGERS]
+if user asks how many days related to a specific
+
+======================================================================
+get_hk_stock_basic_info
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+item_name := item_name
+name := name
+code := code
+
+[CONSTRAINTS]
+REQUIRED: item_name
+OPTIONAL: name, code
+ENUMS:
+- item_name: comunic, comcnname, comenname
+
+[TRIGGERS]
+if user asks, possibly mentioning how many days or number of days, for static company profile details (e.g., Chinese/English 
+
+======================================================================
+get_nbs_region_data
+  - TRIGGERS combination branch detected: mentions 2 optional params in one line
+
+Generated spec:
+[SLOTS]
+kind := kind
+path := path
+period := period
+target_label := target_label
+target_time := target_time
+region := region
+
+[CONSTRAINTS]
+REQUIRED:
+- kind
+- path
+- period
+- target_label
+- target_time
+
+OPTIONAL:
+- region
+- indicator
+
+ENUMS:
+- kind: ['分省月度数据', '分省季度数据', '分省年度数据']
+
+[TRIGGERS]
+if user 
+
+======================================================================
+calculate_bond_yield_change_on_date
+  - OUTPUT_BINDING references non-existent field: yield_change_basis_points
+  - OUTPUT_BINDING references non-existent field: yield_percent
+
+Generated spec:
+[SLOTS]
+target_date := target_date
+curve_name := curve_name
+terms := terms
+
+[CONSTRAINTS]
+REQUIRED: target_date
+OPTIONAL: curve_name, terms
+
+[TRIGGERS]
+if user asks how many days or to count trading days up to a specific date in order to obtain that date’s government bond yield curve levels and thei

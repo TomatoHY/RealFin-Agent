@@ -1,0 +1,103 @@
+{
+  "tool_name": "get_gold_forex_reserves",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy",
+    "macro"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "indicator_name",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.NAME",
+      "enum": [
+        "黄金储备",
+        "国家外汇储备"
+      ],
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "统计时间",
+      "semantic_type": "value",
+      "description": "The statistical time in 'YYYY-MM' format."
+    },
+    {
+      "field": "黄金储备",
+      "semantic_type": "value",
+      "description": "Gold reserves data. Unit not specified."
+    },
+    {
+      "field": "国家外汇储备",
+      "semantic_type": "value",
+      "description": "National foreign exchange reserves data. Unit not specified."
+    }
+  ],
+  "produces": [
+    "gold_reserves_data",
+    "forex_reserves_data"
+  ],
+  "consumes": [
+    "time_range",
+    "indicator_option"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "indicator_name": "黄金储备",
+      "start_date": "2023-01",
+      "end_date": "2023-09"
+    },
+    "return_shape_example": {
+      "统计时间": "2023-09",
+      "黄金储备": 2000.5,
+      "国家外汇储备": 3200.75,
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The indicator_name must be either '黄金储备' or '国家外汇储备'."
+      }
+    }
+  },
+  "description": "SELECT RESERVE_VALUE\nFROM NBS\nWHERE INDICATOR = <黄金储备|国家外汇储备>\n  AND TIME >= start_date\n  AND TIME <= end_date",
+  "tool_alternative": [
+    "calculate_gold_forex_change",
+    "get_gold_forex_reserves_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

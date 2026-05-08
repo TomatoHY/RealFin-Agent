@@ -1,0 +1,110 @@
+{
+  "tool_name": "get_sge_daily_data",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "product_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.PRODUCT_NAME",
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "开盘价",
+        "最高价",
+        "最低价",
+        "收盘价",
+        "涨跌",
+        "涨跌幅",
+        "加权平均价",
+        "成交量",
+        "成交金额",
+        "持仓量",
+        "交收方向",
+        "交收量"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, fixed as 'Shanghai Gold Exchange (SGE) report'."
+    },
+    {
+      "field": "product_name",
+      "semantic_type": "entity",
+      "description": "The name of the queried product."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the data, formatted as 'YYYY-MM-DD'."
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "identifier",
+      "description": "The name of the queried data column."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The numerical result of the query."
+    }
+  ],
+  "produces": [
+    "financial_metric"
+  ],
+  "consumes": [
+    "product_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle exceptions internally."
+  },
+  "examples": {
+    "parameter_template": {
+      "product_name": "Au(T+D)",
+      "query_date": "2023-10-15",
+      "column_label": "closing price"
+    },
+    "return_shape_example": {
+      "source": "Shanghai Gold Exchange (SGE) report",
+      "product_name": "Au(T+D)",
+      "date": "2023-10-15",
+      "metric_name": "closing price",
+      "value": 456.78
+    }
+  },
+  "description": "SELECT DAILY_PRICE.<开盘价|最高价|最低价>\nFROM FUTURES\nWHERE PRODUCT = <product_name>\n  AND DATE = <query_date>\n  AND PRICE_FIELD = <column_label>",
+  "tool_alternative": [
+    "get_sge_benchmark_price"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_foreign_futures_realtime",
+    "get_futures_daily_price",
+    "get_futures_history",
+    "get_futures_price_on_date",
+    "get_sge_benchmark_price"
+  ]
+}

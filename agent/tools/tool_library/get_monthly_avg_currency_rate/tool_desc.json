@@ -1,0 +1,76 @@
+{
+  "tool_name": "get_monthly_avg_currency_rate",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "forex"
+  ],
+  "task_type": "aggregation",
+  "input_semantics": [
+    {
+      "field": "currency_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.CURRENCY",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "月份",
+      "semantic_type": "value",
+      "description": "The month in 'YYYY-MM' format."
+    },
+    {
+      "field": "currency_monthly_avg",
+      "semantic_type": "value",
+      "description": "The monthly arithmetic average exchange rate of the specified currency."
+    }
+  ],
+  "produces": [
+    "monthly_average_exchange_rate"
+  ],
+  "consumes": [
+    "currency_data"
+  ],
+  "error_model": {
+    "observability": "exception",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "The tool uses try-except blocks to handle exceptions."
+  },
+  "examples": {
+    "parameter_template": {
+      "currency_name": "USD",
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31"
+    },
+    "return_shape_example": {
+      "月份": "2023-01",
+      "currency_monthly_avg": 6.45
+    }
+  },
+  "description": "SELECT MONTHLY_AVG_EXCHANGE_RATE\nFROM FOREX\nWHERE CURRENCY = <currency_name>\n  AND DATE BETWEEN <start_date> AND <end_date>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_fx_spot_quote_value",
+    "get_rmb_central_parity_rate_change"
+  ]
+}

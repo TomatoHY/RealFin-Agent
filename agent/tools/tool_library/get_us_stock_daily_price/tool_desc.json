@@ -1,0 +1,186 @@
+{
+  "tool_name": "get_us_stock_daily_price",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "prev_close"
+      ],
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
+      "enum": [
+        "",
+        "qfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE\n正例：使用 'latest' 获取最新交易日数据（如 query_date='latest'），或使用具体日期格式 'YYYY-MM-DD'（如 query_date='2025-01-15'）\n反例（错误做法）：当需要最新数据时使用固定的历史日期（如 '2025-01-15'）而非 'latest' 特殊值",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": false
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    },
+    {
+      "field": "original_query",
+      "semantic_type": "dsl_slot",
+      "description": "METADATA.ORIGINAL_QUERY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "result",
+      "semantic_type": "value",
+      "description": "The result value of the query."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item with its name and value."
+    },
+    {
+      "field": "min_value",
+      "semantic_type": "value",
+      "description": "The minimum value found in the query range."
+    },
+    {
+      "field": "query_type",
+      "semantic_type": "metadata",
+      "description": "The type of query performed, either 'single_date' or 'range_minimum'."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock queried."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the query result, in YYYY-MM-DD format."
+    },
+    {
+      "field": "date_of_min_value",
+      "semantic_type": "time_range",
+      "description": "The date when the minimum value was recorded, in YYYY-MM-DD format."
+    }
+  ],
+  "produces": [
+    "stock_price_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": [
+    {
+      "parameter_template": {
+        "column_label": "close",
+        "adjust": "",
+        "query_date": "2023-10-05",
+        "start_date": "2023-09-01",
+        "end_date": "2023-09-30",
+        "code": "get_code_from_name(\"Apple\", \"us\")"
+      },
+      "return_shape_example": {
+        "result": 174.55,
+        "requested_item": {
+          "name": "Apple",
+          "value": 174.55
+        },
+        "min_value": 169.58,
+        "query_type": "range_minimum",
+        "stock_identifier": "AAPL",
+        "date": "2023-09-30",
+        "date_of_min_value": "2023-09-08"
+      }
+    },
+    {
+      "parameter_template": {
+        "column_label": "volume",
+        "adjust": "",
+        "query_date": "latest",
+        "code": "AAPL"
+      },
+      "return_shape_example": {
+        "result": 1000000,
+        "requested_item": {
+          "name": "volume",
+          "value": 1000000
+        },
+        "query_type": "single_date",
+        "stock_identifier": "AAPL",
+        "date": "2025-12-16 00:00:00"
+      }
+    }
+  ],
+  "description": "SELECT TIMESERIES.PRICE.<open|high|low>\nFROM US_STOCK\nWHERE DATERANGE(start_date, end_date)\n  AND QUERY_DATE = <date>\n  AND ADJUST = <''|qfq>\n  AND IDENTIFY BY (CODE = <code> OR NAME = <name>)\n  [AND START_DATE = <date>]",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

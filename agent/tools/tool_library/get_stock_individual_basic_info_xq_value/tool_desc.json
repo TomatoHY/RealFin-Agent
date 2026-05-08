@@ -1,0 +1,126 @@
+{
+  "tool_name": "get_stock_individual_basic_info_xq_value",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "row_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.ROW_LABEL | 注意：比较需统一取listed_date",
+      "enum": [
+        "org_name_cn",
+        "org_short_name_cn",
+        "main_operation_business",
+        "operating_scope",
+        "org_cn_introduction",
+        "legal_representative",
+        "general_manager",
+        "secretary",
+        "established_date",
+        "reg_asset",
+        "staff_num",
+        "telephone",
+        "email",
+        "org_website",
+        "reg_address_cn",
+        "office_address_cn",
+        "currency",
+        "listed_date",
+        "provincial_name",
+        "actual_controller",
+        "classi_name",
+        "chairman",
+        "issue_price",
+        "affiliate_industry"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code retrieved from the data."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "identifier",
+      "description": "The stock name retrieved from the data."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is '雪球(Xueqiu) - Basic Info'."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item with its name and value."
+    }
+  ],
+  "produces": [
+    "stock_basic_info"
+  ],
+  "consumes": [
+    "stock_identifier"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns empty on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "row_label": "market_cap",
+      "name": null,
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "stock_name": "Apple Inc.",
+      "data_source": "雪球(Xueqiu) - Basic Info",
+      "requested_item": {
+        "name": "market_cap",
+        "value": "2.41T"
+      },
+      "error_example": {
+        "error_type": "invalid_parameter",
+        "error_message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT CORPORATE_PROFILE.<org_name_cn|org_short_name_cn|main_operation_business|operating_scope|org_cn_introduction|legal_representative|general_manager|secretary|established_date|reg_asset|staff_num|telephone|email|org_website|reg_address_cn|office_address_cn|currency|listed_date|provincial_name|actual_controller|classi_name|chairman|issue_price|affiliate_industry>\nFROM A_SHARE\nWHERE IDENTIFY BY (CODE = <code> OR NAME = <name>)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_hk_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_listing_date",
+    "get_top_10_shareholders",
+    "search_kg"
+  ]
+}

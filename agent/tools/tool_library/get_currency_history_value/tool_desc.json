@@ -1,0 +1,116 @@
+{
+  "tool_name": "get_currency_history_value",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "forex"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "base",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.BASE",
+      "required": true
+    },
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "currency",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CURRENCY",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "rates",
+        "date",
+        "base"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "base_currency",
+      "semantic_type": "identifier",
+      "description": "The base currency code used for the exchange rate."
+    },
+    {
+      "field": "target_currency",
+      "semantic_type": "identifier",
+      "description": "The target currency code for which the exchange rate is provided."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date for which the exchange rate data is retrieved."
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "metadata",
+      "description": "The name of the metric or column label for the exchange rate value."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The exchange rate value for the specified currency and metric."
+    }
+  ],
+  "produces": [
+    "exchange_rate"
+  ],
+  "consumes": [
+    "currency_code",
+    "historical_date"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns error messages in the value field."
+  },
+  "examples": {
+    "parameter_template": {
+      "base": "USD",
+      "date": "2023-09-15",
+      "currency": "CNY",
+      "column_label": "close"
+    },
+    "return_shape_example": {
+      "base_currency": "USD",
+      "target_currency": "CNY",
+      "date": "2023-09-15",
+      "metric_name": "close",
+      "value": "6.45"
+    }
+  },
+  "description": "SELECT HISTORICAL_FX_RECORD.<rates|date|base>\nFROM FOREX\nWHERE BASE_CURRENCY = <base>\n  AND TARGET_CURRENCY = <currency>\n  AND DATE = <date>",
+  "tool_alternative": [
+    "convert_currency_amount",
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_forex_price_on_date",
+    "get_fx_spot_quote_value"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "convert_currency_amount",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_forex_price_on_date",
+    "get_fx_spot_quote_value",
+    "get_monthly_avg_currency_rate",
+    "get_rmb_central_parity_rate_change"
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "tool_name": "get_stock_sse_deal_daily_value",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "row_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.ROW_LABEL",
+      "enum": [
+        "挂牌数",
+        "市价总值",
+        "流通市值",
+        "成交金额",
+        "成交量",
+        "平均市盈率",
+        "换手率",
+        "流通换手率"
+      ],
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "股票",
+        "主板A",
+        "主板B",
+        "科创板",
+        "股票回购"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "market",
+      "semantic_type": "metadata",
+      "description": "The market from which the data is retrieved. Always '上海证券交易所(SSE)'."
+    },
+    {
+      "field": "data_type",
+      "semantic_type": "metadata",
+      "description": "The type of data retrieved. Always 'Daily Deal Summary'."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date for which the data is retrieved. Format: YYYYMMDD."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item from the daily deal summary."
+    }
+  ],
+  "produces": [
+    "Daily Deal Summary"
+  ],
+  "consumes": [
+    "Stock Market Data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns empty on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "2023-10-15",
+      "row_label": "000001",
+      "column_label": "closing_price"
+    },
+    "return_shape_example": {
+      "market": "上海证券交易所(SSE)",
+      "data_type": "Daily Deal Summary",
+      "date": "2023-10-15",
+      "requested_item": {
+        "row": "000001",
+        "column": "closing_price",
+        "value": 15.67
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified row_label '999999' does not exist."
+      }
+    }
+  },
+  "description": "SELECT SSE_DEAL_DAILY_STATISTIC\nFROM A_SHARE\nWHERE TIME = <date>\n  AND METRIC = <挂牌数|市价总值|流通市值|成交金额|成交量|平均市盈率|换手率|流通换手率>\n  AND BOARD = <股票|主板A|主板B|科创板|股票回购>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "search_kg"
+  ]
+}

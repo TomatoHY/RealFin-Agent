@@ -1,0 +1,102 @@
+{
+  "tool_name": "get_china_population_nbs",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "macro",
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "population_metric",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.POPULATION",
+      "enum": [
+        "total",
+        "male",
+        "female",
+        "urban",
+        "rural"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_year",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.YEAR",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "Data source, which is the National Bureau of Statistics (NBS) of China."
+    },
+    {
+      "field": "region",
+      "semantic_type": "metadata",
+      "description": "Region of the data, which is China."
+    },
+    {
+      "field": "year",
+      "semantic_type": "time_range",
+      "description": "Year of the population data."
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "metadata",
+      "description": "Name of the population metric."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "Population value in ten thousand people. Unit: 10k people."
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "Unit of the population value, which is '万人' (ten thousand people)."
+    }
+  ],
+  "produces": [
+    "population_data"
+  ],
+  "consumes": [
+    "population_metric",
+    "query_year"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "population_metric": "total",
+      "query_year": "2022"
+    },
+    "return_shape_example": {
+      "source": "National Bureau of Statistics (NBS) of China",
+      "region": "China",
+      "year": 2022,
+      "metric_name": "total",
+      "value": 141260,
+      "unit": "万人",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified year is out of range. Please provide a year between 1949 and the current year."
+      }
+    }
+  },
+  "description": "SELECT POPULATION.<total|male|female>\nFROM NBS\nWHERE ENTITY = China\n  AND TIME = <query_year>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_nbs_region_data"
+  ]
+}

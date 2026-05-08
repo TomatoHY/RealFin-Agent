@@ -1,0 +1,128 @@
+{
+  "tool_name": "analyze_index_performance",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "index"
+  ],
+  "task_type": "filtering",
+  "input_semantics": [
+    {
+      "field": "identifiers",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.FILTER",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "pct_change_threshold_percent",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.PERCENT_CHANGE_THRESHOLD",
+      "required": false
+    },
+    {
+      "field": "turnover_threshold_yuan",
+      "semantic_type": "dsl_slot",
+      "description": "AMOUNT.TURNOVER_THRESHOLD",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "status",
+      "semantic_type": "metadata",
+      "description": "Status of the analysis ('success' or 'error')."
+    },
+    {
+      "field": "count_of_matching_days",
+      "semantic_type": "value",
+      "description": "Number of days matching the criteria."
+    },
+    {
+      "field": "matching_days_details",
+      "semantic_type": "list",
+      "description": "Details of the days matching the criteria."
+    },
+    {
+      "field": "message",
+      "semantic_type": "metadata",
+      "description": "Error message if the status is 'error'."
+    }
+  ],
+  "produces": [
+    "index_performance_analysis"
+  ],
+  "consumes": [
+    "index_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifiers": [
+        "000001",
+        "600519",
+        "0700.HK",
+        "AAPL"
+      ],
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31",
+      "pct_change_threshold_percent": 2.5,
+      "turnover_threshold_yuan": 100000000
+    },
+    "return_shape_example": {
+      "status": "success",
+      "count_of_matching_days": 15,
+      "matching_days_details": [
+        {
+          "date": "2023-03-15",
+          "identifier": "600519",
+          "pct_change": "+3.45%",
+          "turnover_yuan": 150000000
+        },
+        {
+          "date": "2023-06-20",
+          "identifier": "AAPL",
+          "pct_change": "+2.75%",
+          "turnover_yuan": 200000000
+        }
+      ],
+      "message": ""
+    }
+  },
+  "description": "SELECT COUNT_OF_TRADING_DAYS\nFROM INDEX\nWHERE IDENTIFY BY identifiers\n  AND DATE BETWEEN start_date AND end_date\n  [AND PCT_CHANGE >= pct_change_threshold_percent]\n  [AND TURNOVER >= turnover_threshold_yuan]",
+  "tool_alternative": [
+    "",
+    "calculate_index_change_pct",
+    "calculate_index_change_pct_in_period",
+    "get_indices_gain_ranking_dataframe"
+  ],
+  "tool_dependencies": [
+    "get_index_history"
+  ],
+  "tool_related": [
+    "",
+    "calculate_index_change_pct",
+    "calculate_index_change_pct_in_period",
+    "get_index_history",
+    "get_indices_gain_ranking_dataframe"
+  ]
+}

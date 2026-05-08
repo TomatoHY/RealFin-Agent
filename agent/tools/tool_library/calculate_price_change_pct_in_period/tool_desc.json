@@ -1,0 +1,170 @@
+{
+  "tool_name": "calculate_price_change_pct_in_period",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: start_date | TYPE: date(YYYY-MM-DD) | ENUM: null | REQUIRED: true\nMEANING: TIME.START | 注意：用YYYY-MM-DD，含起始日 | 补充：用于区间累计涨跌幅的起点边界；做“全年”(如2023)时建议明确为上一年末基准交易日（常见 2022-12-31）或明确为 2023-01-01 并说明如何处理非交易日对齐，以避免与其他标的/工具产生口径不一致。",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: end_date | TYPE: date(YYYY-MM-DD) | ENUM: null | REQUIRED: true\nMEANING: TIME.END | 注意：用YYYY-MM-DD，含结束日 | 补充：用于区间累计涨跌幅的终点边界；做“全年”(如2023)时建议明确为年末基准交易日（常见 2023-12-31）或明确为 2023-12-31 并说明非交易日时的对齐规则，确保与 start_date 及其他股票保持同口径。",
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: market | TYPE: enum | ENUM: [a,hk,us] | REQUIRED: true\nMEANING: ENTITY.MARKET | 补充：若为A股(market='a')进行跨股票涨幅比较，建议不要与A股专用涨幅工具混用/重复调用；应在同一 market 下用同一工具与同一边界规则计算，避免自然日/交易日对齐差异导致结果不可比。",
+      "enum": [
+        "a",
+        "hk",
+        "us"
+      ],
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: adjust | TYPE: enum | ENUM: [qfq,hfq,] | REQUIRED: true\nMEANING: PRICE.ADJUST | 注意：禁用''；年度涨幅常用qfq | 补充：跨股票比较必须保持相同复权口径（同一 adjust）；做年度涨幅通常统一使用 qfq 以提升可比性，避免不同复权方式导致差值偏离。",
+      "enum": [
+        "qfq",
+        "hfq",
+        ""
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "Type of analysis performed. Always 'stock_change_percentage_in_period'."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock, either name or code."
+    },
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The code of the stock."
+    },
+    {
+      "field": "market",
+      "semantic_type": "option",
+      "description": "The market type where the stock is listed."
+    },
+    {
+      "field": "query_period",
+      "semantic_type": "time_range",
+      "description": "The start and end date of the query period."
+    },
+    {
+      "field": "actual_trading_period",
+      "semantic_type": "time_range",
+      "description": "The actual start and end date of trading data."
+    },
+    {
+      "field": "period_prices",
+      "semantic_type": "record",
+      "description": "The closing prices at the start and end of the period."
+    },
+    {
+      "field": "calculation_result",
+      "semantic_type": "value",
+      "description": "The cumulative percentage change over the period."
+    }
+  ],
+  "produces": [
+    "stock_change_percentage"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31",
+      "market": "us",
+      "adjust": "qfq",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "analysis_type": "stock_change_percentage_in_period",
+      "stock_identifier": "AAPL",
+      "stock_code": "AAPL",
+      "market": "us",
+      "query_period": {
+        "start": "2023-01-01",
+        "end": "2023-12-31"
+      },
+      "actual_trading_period": {
+        "start_date": "2023-01-03",
+        "end_date": "2023-12-29"
+      },
+      "period_prices": {
+        "start_price": "150.00",
+        "end_price": "175.00"
+      },
+      "calculation_result": {
+        "cumulative_percentage_change": "+16.67%"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is not valid for the selected market."
+      }
+    }
+  },
+  "description": "SELECT CUMULATIVE_PERCENTAGE_PRICE_CHANGE, TRADING_DAY_COUNT\nFROM A_SHARE\nWHERE START_DATE = <YYYY-MM-DD>\n  AND END_DATE = <YYYY-MM-DD>\n  AND MARKET = <a|hk|us>\n  AND ADJUST = <qfq|hfq|none>\n  AND IDENTIFY BY (CODE = <code> OR NAME = <name>)\n[CONSTRAINT]\n- 对A股(MARKET='a')做年度/区间涨幅对比时，应优先统一使用同一口径与同一类工具（避免与A股专用涨幅工具混用/重复调用），否则可能因数据源或起止日对齐规则不同导致不同股票结果不可比。\n- 若查询目标为“全年”(如2023年)，建议将 START_DATE/END_DATE 明确为基准交易日区间端点（常见：2022-12-31 收盘价 -> 2023-12-31 收盘价的累计涨跌幅；或等价地明确 2023-01-01~2023-12-31 且说明边界交易日处理），以保证跨标的比较可复现一致。\n- 计算口径需保持：同一 ADJUST、同一 MARKET、同一 START_DATE/END_DATE 边界规则。",
+  "tool_alternative": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_stocks_gain_ranking_dataframe"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "get_stocks_history_dataframe",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_stock_price_range_in_period",
+    "get_code_from_name",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "search_kg"
+  ]
+}

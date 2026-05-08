@@ -1,0 +1,109 @@
+{
+  "tool_name": "calculate_futures_minute_spread",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "symbol1",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "symbol2",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "period",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.PERIOD",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "Type of analysis performed."
+    },
+    {
+      "field": "symbol_base",
+      "semantic_type": "identifier",
+      "description": "The base futures contract symbol."
+    },
+    {
+      "field": "symbol_target",
+      "semantic_type": "identifier",
+      "description": "The target futures contract symbol."
+    },
+    {
+      "field": "calculation_formula",
+      "semantic_type": "metadata",
+      "description": "The formula used for calculating the spread."
+    },
+    {
+      "field": "max_spread",
+      "semantic_type": "record",
+      "description": "The maximum spread value and the datetime it occurred."
+    },
+    {
+      "field": "min_spread",
+      "semantic_type": "record",
+      "description": "The minimum spread value and the datetime it occurred."
+    }
+  ],
+  "produces": [
+    "futures_minute_spread"
+  ],
+  "consumes": [
+    "futures_contract_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol1": "AAPL",
+      "symbol2": "TSLA",
+      "period": "5"
+    },
+    "return_shape_example": {
+      "analysis_type": "Futures Minute Spread Analysis",
+      "symbol_base": "AAPL",
+      "symbol_target": "TSLA",
+      "calculation_formula": "Spread = Price(Symbol1) - Price(Symbol2)",
+      "max_spread": {
+        "value": 15.75,
+        "date": "2023-10-01 14:35"
+      },
+      "min_spread": {
+        "value": 5.2,
+        "date": "2023-10-01 09:15"
+      },
+      "error_example": {
+        "error_type": "invalid_parameter",
+        "message": "Invalid period value. Allowed values are '1', '5', '15', '30', '60'."
+      }
+    }
+  },
+  "description": "SELECT COUNT_DAYS_WITH_EXTREME_INTRADAY_SPREAD\nFROM FUTURES\nWHERE SYMBOL1 = <futures_symbol_1>\n  AND SYMBOL2 = <futures_symbol_2>\n  AND PERIOD = <minute_period>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_futures_history"
+  ],
+  "tool_related": [
+    "calculate_futures_spread",
+    "get_futures_history"
+  ]
+}

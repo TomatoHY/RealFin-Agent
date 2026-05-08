@@ -1,0 +1,137 @@
+{
+  "tool_name": "get_futures_history",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "identifier",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.FIELD",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "columns_to_include",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.COLUMNS",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "日期",
+      "semantic_type": "value",
+      "description": "日期"
+    },
+    {
+      "field": "开盘价",
+      "semantic_type": "value",
+      "description": "开盘价"
+    },
+    {
+      "field": "最高价",
+      "semantic_type": "value",
+      "description": "最高价"
+    },
+    {
+      "field": "最低价",
+      "semantic_type": "value",
+      "description": "最低价"
+    },
+    {
+      "field": "收盘价",
+      "semantic_type": "value",
+      "description": "收盘价"
+    },
+    {
+      "field": "成交量",
+      "semantic_type": "value",
+      "description": "成交量，注意单位"
+    },
+    {
+      "field": "持仓量",
+      "semantic_type": "value",
+      "description": "持仓量，注意单位"
+    },
+    {
+      "field": "动态结算价",
+      "semantic_type": "value",
+      "description": "动态结算价"
+    }
+  ],
+  "produces": [
+    "futures_data"
+  ],
+  "consumes": [
+    "futures_identifier",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except"
+  },
+  "examples": {
+    "parameter_template": {
+      "identifier": "CU2105",
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31",
+      "columns_to_include": [
+        "日期",
+        "开盘价",
+        "最高价",
+        "最低价",
+        "收盘价",
+        "成交量",
+        "持仓量",
+        "动态结算价"
+      ]
+    },
+    "return_shape_example": {
+      "日期": "2023-01-02",
+      "开盘价": 68000.5,
+      "最高价": 68500.75,
+      "最低价": 67800.25,
+      "收盘价": 68200.0,
+      "成交量": 1500,
+      "持仓量": 12000,
+      "动态结算价": 68100.5,
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified date range is invalid."
+      }
+    }
+  },
+  "description": "SELECT TIMESERIES.DAILY_HISTORY\nFROM FUTURES\nWHERE IDENTIFIER = <futures_identifier>\n  AND DATE BETWEEN <start_date> AND <end_date>\n  [AND COLUMNS = <columns_to_include>]",
+  "tool_alternative": [
+    "get_futures_daily_price",
+    "get_futures_price_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_futures_minute_spread",
+    "get_foreign_futures_realtime",
+    "get_futures_daily_price",
+    "get_futures_price_on_date",
+    "get_sge_benchmark_price",
+    "get_sge_daily_data"
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "tool_name": "calculate_stock_price_range_in_period",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "PRICE.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "Type of analysis performed, always 'stock_price_range'."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The stock identifier used for the query, either name or code."
+    },
+    {
+      "field": "query_period_start",
+      "semantic_type": "time_range",
+      "description": "The start date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "query_period_end",
+      "semantic_type": "time_range",
+      "description": "The end date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "adjust_type",
+      "semantic_type": "option",
+      "description": "The type of price adjustment applied. 'non-adjusted' if no adjustment."
+    },
+    {
+      "field": "calculation_result",
+      "semantic_type": "record",
+      "description": "The result of the stock price range calculation."
+    },
+    {
+      "field": "period_high",
+      "semantic_type": "value",
+      "description": "The highest stock price during the period, formatted as a string with two decimal places."
+    },
+    {
+      "field": "period_low",
+      "semantic_type": "value",
+      "description": "The lowest stock price during the period, formatted as a string with two decimal places."
+    },
+    {
+      "field": "price_difference",
+      "semantic_type": "value",
+      "description": "The difference between the highest and lowest stock prices during the period, formatted as a string with two decimal places."
+    }
+  ],
+  "produces": [
+    "stock_price_range"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns schema-compliant results."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31",
+      "adjust": "qfq",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "analysis_type": "stock_price_range",
+      "stock_identifier": "AAPL",
+      "query_period_start": "2023-01-01",
+      "query_period_end": "2023-01-31",
+      "adjust_type": "qfq",
+      "calculation_result": {
+        "period_high": "150.00",
+        "period_low": "135.00",
+        "price_difference": "15.00"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is not valid for the specified date range."
+      }
+    }
+  },
+  "description": "SELECT PRICE_RANGE_DIFFERENCE\nFROM A_SHARE\nWHERE DATE_RANGE = (start_date, end_date)\n  AND ADJUST = <''|qfq|hfq>\n  AND [IDENTIFY BY (CODE = <code> OR NAME = <name>)]",
+  "tool_alternative": [
+    "calculate_price_change_pct_in_period",
+    "calculate_a_stock_change_pct_in_period",
+    "get_stocks_gain_ranking_dataframe",
+    "calculate_price_change_pct"
+  ],
+  "tool_dependencies": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_stocks_gain_ranking_dataframe",
+    "search_kg"
+  ]
+}

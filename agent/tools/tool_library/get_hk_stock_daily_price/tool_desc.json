@@ -1,0 +1,187 @@
+{
+  "tool_name": "get_hk_stock_daily_price",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME\n触发条件：当已知具体股票名称（如'阿里巴巴'、'腾讯控股'）时使用；必须是单只股票的完整名称\n禁用条件：不能使用实体组名称（如'ATMX'、'FAANG'）；不能使用缩写或别名；当查询实体组时，应先通过search_kg获取members，再用各成员的name字段\n边界规则：与code参数二选一；优先使用code以避免名称歧义\n聚合场景规则：当用户询问实体组的聚合指标（如'ATMX平均最低价'）时，必须对每个成员股票分别调用本工具，收集所有返回值后在代码中计算聚合结果（平均值、总和等），不能仅查询部分成员或省略聚合步骤",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE\n触发条件：当已知股票代码时使用；推荐优先使用code而非name以确保精确匹配\n禁用条件：不能使用实体组标识符；当查询实体组时，应先通过search_kg获取members，再用get_code_from_name转换各成员名称为code\n边界规则：与name参数二选一；港股代码格式通常为5位数字（如'09988'）\n聚合场景规则：查询实体组聚合数据时，需对每个成员的code分别调用本工具；所有成员数据获取完毕后，必须在代码中执行聚合计算（如求平均值：sum(all_values)/len(all_values)）并返回最终结果",
+      "required": false
+    },
+    {
+      "field": "original_query",
+      "semantic_type": "dsl_slot",
+      "description": "METADATA.ORIGINAL_QUERY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "result",
+      "semantic_type": "value",
+      "description": "The result value of the query."
+    },
+    {
+      "field": "query_type",
+      "semantic_type": "metadata",
+      "description": "The type of query executed."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the queried data."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item and its value."
+    },
+    {
+      "field": "min_value",
+      "semantic_type": "value",
+      "description": "The minimum value found in a range query."
+    },
+    {
+      "field": "date_of_min_value",
+      "semantic_type": "time_range",
+      "description": "The date when the minimum value was found."
+    }
+  ],
+  "produces": [
+    "stock_price_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns structured data."
+  },
+  "examples": [
+    {
+      "parameter_template": {
+        "column_label": "close",
+        "adjust": "",
+        "query_date": "2023-10-05",
+        "start_date": "2023-09-01",
+        "end_date": "2023-09-30",
+        "code": "get_code_from_name(\"腾讯控股\", \"hk\")"
+      },
+      "return_shape_example": {
+        "result": 350.5,
+        "query_type": "daily_price",
+        "stock_identifier": "0700.HK",
+        "date": "2023-10-05",
+        "requested_item": {
+          "name": "close",
+          "value": 350.5
+        },
+        "min_value": 345.0,
+        "date_of_min_value": "2023-09-15",
+        "error": {
+          "type": "invalid_parameter",
+          "message": "The specified date is a non-trading day."
+        }
+      }
+    },
+    {
+      "parameter_template": {
+        "column_label": "low",
+        "adjust": "",
+        "query_date": "latest",
+        "code": "0700.HK"
+      },
+      "return_shape_example": {
+        "result": 345.0,
+        "query_type": "single_date",
+        "stock_identifier": "0700",
+        "date": "2025-12-16 00:00:00",
+        "requested_item": {
+          "name": "low",
+          "value": 345.0
+        }
+      }
+    }
+  ],
+  "description": "SELECT MIN(TIMESERIES.PRICE.<open|high|low>), TRADING_DAY_RANK_OF_MIN\nFROM HK_STOCK\nWHERE (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)\n  AND DATE_RANGE(start_date, end_date)\n  AND ADJUST = <''|qfq|hfq>\n  AND QUERY_DATE = <query_date>\n触发条件：用于查询单只股票的日线价格数据；当需要查询实体组（如ATMX、FAANG等）的聚合数据时，必须先使用search_kg获取成员列表，然后对每个成员分别调用本工具\n禁用条件：不能直接用实体组名称作为name参数；不能一次性查询多只股票\n边界规则：每次调用仅返回一只股票的数据；实体组场景需在应用层进行聚合计算（如平均值、总和等）\n聚合计算规则：本工具不支持批量查询或自动聚合；当用户询问多只股票的平均值、总和、最大值、最小值等聚合指标时，必须：(1)多次调用本工具获取各股票数据 (2)在代码中完成聚合运算 (3)返回最终聚合结果；切勿仅返回单只股票数据或部分数据",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

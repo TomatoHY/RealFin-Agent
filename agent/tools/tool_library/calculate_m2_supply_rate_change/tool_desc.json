@@ -1,0 +1,105 @@
+{
+  "tool_name": "calculate_m2_supply_rate_change",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "指标名称",
+      "semantic_type": "value",
+      "description": "The name of the indicator, fixed as 'M2货币供应年率 (%)'."
+    },
+    {
+      "field": "开始时间",
+      "semantic_type": "time_range",
+      "description": "The start time, format 'YYYY-MM'."
+    },
+    {
+      "field": "开始数值",
+      "semantic_type": "value",
+      "description": "The initial value of the M2 supply rate. Unit: percentage."
+    },
+    {
+      "field": "结束时间",
+      "semantic_type": "time_range",
+      "description": "The end time, format 'YYYY-MM'."
+    },
+    {
+      "field": "结束数值",
+      "semantic_type": "value",
+      "description": "The final value of the M2 supply rate. Unit: percentage."
+    },
+    {
+      "field": "绝对变化(百分点)",
+      "semantic_type": "value",
+      "description": "The absolute change in the M2 supply rate. Unit: percentage."
+    }
+  ],
+  "produces": [
+    "M2 supply rate change"
+  ],
+  "consumes": [
+    "M2 supply data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle exceptions internally."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2022-01",
+      "end_date": "2023-01"
+    },
+    "return_shape_example": {
+      "指标名称": "M2货币供应年率 (%)",
+      "开始时间": "2022-01",
+      "开始数值": 8.5,
+      "结束时间": "2023-01",
+      "结束数值": 9.2,
+      "绝对变化(百分点)": 0.7
+    }
+  },
+  "description": "SELECT ABSOLUTE_CHANGE.M2_YOY_GROWTH_RATE\nFROM NBS\nWHERE TIME.START = <start_date> AND TIME.END = <end_date>",
+  "tool_alternative": [
+    "get_m2_supply_rate_on_date",
+    "get_m2_supply_rate"
+  ],
+  "tool_dependencies": [
+    "get_m2_supply_rate_on_date"
+  ],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "tool_name": "get_stock_consensus_forecast",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "metric",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.OPTION",
+      "enum": [
+        "每股收益",
+        "净利润"
+      ],
+      "required": true
+    },
+    {
+      "field": "value_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.OPTION",
+      "enum": [
+        "最小值",
+        "均值",
+        "最大值"
+      ],
+      "required": true
+    },
+    {
+      "field": "year",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.YEAR",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "Stock name or code"
+    },
+    {
+      "field": "forecast_year",
+      "semantic_type": "time_range",
+      "description": "Forecast year"
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "Data source, fixed as '盈利预测 (同花顺)'"
+    },
+    {
+      "field": "requested_metric",
+      "semantic_type": "record",
+      "description": "Requested metric details"
+    }
+  ],
+  "produces": [
+    "stock_forecast"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks"
+  },
+  "examples": {
+    "parameter_template": {
+      "metric": "每股收益",
+      "value_type": "均值",
+      "year": 2024,
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_identifier": "AAPL",
+      "forecast_year": 2024,
+      "data_source": "盈利预测 (同花顺)",
+      "requested_metric": {
+        "metric_type": "每股收益",
+        "value_type": "均值",
+        "value": 5.23,
+        "unit": "USD"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT CONSENSUS_FORECAST.METRIC.<每股收益|净利润>.VALUE_TYPE.<最小值|均值|最大值>\nFROM A_SHARE\nWHERE YEAR = <year>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_earnings_announcement",
+    "get_stock_comment",
+    "get_stock_detailed_metric_forecast",
+    "search_kg"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "tool_name": "calculate_index_change_pct",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "index"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "identifier",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.TOKEN",
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "enum": [
+        "a",
+        "hk",
+        "us",
+        "global"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "result",
+      "semantic_type": "record",
+      "description": "The result object containing price and percentage change."
+    },
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "The type of analysis performed."
+    },
+    {
+      "field": "identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the index."
+    },
+    {
+      "field": "market",
+      "semantic_type": "entity",
+      "description": "The market in which the index is listed."
+    },
+    {
+      "field": "current_day",
+      "semantic_type": "record",
+      "description": "The current day's closing price and date."
+    },
+    {
+      "field": "previous_day",
+      "semantic_type": "record",
+      "description": "The previous trading day's closing price and date."
+    }
+  ],
+  "produces": [
+    "index_change_percentage"
+  ],
+  "consumes": [
+    "index_data",
+    "market_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifier": "AAPL",
+      "market": "US",
+      "query_date": "2023-10-05"
+    },
+    "return_shape_example": {
+      "result": {
+        "price_change": "3.50",
+        "percentage_change": "+2.45%"
+      },
+      "analysis_type": "daily_change",
+      "identifier": "AAPL",
+      "market": "US",
+      "current_day": {
+        "date": "2023-10-05",
+        "close_price": "145.30"
+      },
+      "previous_day": {
+        "date": "2023-10-04",
+        "close_price": "141.80"
+      },
+      "error": {
+        "type": "internal_exception",
+        "message": "Failed to retrieve data for the specified date."
+      }
+    }
+  },
+  "description": "SELECT INDEX.CHANGE_PCT\nFROM INDEX\nWHERE IDENTIFY BY (IDENTIFIER = <index_identifier>)\n  AND MARKET = <a|hk|us>\n  AND DATE = <query_date>\n  AND COMPARISON_PERIOD = PREVIOUS_TRADING_DAY",
+  "tool_alternative": [
+    "",
+    "analyze_index_performance",
+    "calculate_index_change_pct_in_period",
+    "get_indices_gain_ranking_dataframe"
+  ],
+  "tool_dependencies": [
+    "get_index_realtime"
+  ],
+  "tool_related": [
+    "",
+    "analyze_index_performance",
+    "calculate_index_change_pct_in_period",
+    "get_index_realtime",
+    "get_indices_gain_ranking_dataframe"
+  ]
+}

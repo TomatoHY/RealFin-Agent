@@ -1,0 +1,55 @@
+{
+  "tool_name": "python_interpreter",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "generic"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "result",
+      "semantic_type": "value",
+      "description": "The result of the evaluated expression if successful."
+    },
+    {
+      "field": "error",
+      "semantic_type": "metadata",
+      "description": "Error message if the code execution fails."
+    }
+  ],
+  "produces": [
+    "computed_value"
+  ],
+  "consumes": [
+    "python_code"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions using try-except and returns error messages."
+  },
+  "examples": {
+    "parameter_template": {
+      "code": "stock_prices = {'AAPL': 150.25, 'TSLA': 720.50}; stock_prices['AAPL'] * 2"
+    },
+    "return_shape_example": {
+      "result": 300.5,
+      "error": "SyntaxError: invalid syntax"
+    }
+  },
+  "description": "SELECT COMPUTATION_RESULT\nFROM GENERIC\nWHERE CODE = <pandas_code>\n\nSELECT COMPUTATION_RESULT\nFROM GENERIC\nWHERE CODE = <day_count_code>\n\nSELECT COMPUTATION_RESULT\nFROM GENERIC\nWHERE CODE = <data_processing_code>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

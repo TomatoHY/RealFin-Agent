@@ -1,0 +1,142 @@
+{
+  "tool_name": "get_stock_hist_price_data_tx",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The stock identifier, either name or code."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is 'Tencent Finance'."
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "time_range",
+      "description": "The date for which the stock data is returned, in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "adjust_type",
+      "semantic_type": "option",
+      "description": "The type of adjustment applied to the stock prices."
+    },
+    {
+      "field": "daily_quote",
+      "semantic_type": "record",
+      "description": "Daily stock price data including open, close, high, low, and amount."
+    }
+  ],
+  "produces": [
+    "historical_stock_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "time_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns schema-compliant empty results on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "query_date": "2023-10-15",
+      "start_date": "20230101",
+      "end_date": "20231015",
+      "adjust": "qfq",
+      "code": "sz000001",
+      "name": null
+    },
+    "return_shape_example": {
+      "stock_identifier": "sz000001",
+      "data_source": "Tencent Finance",
+      "query_date": "2023-10-15",
+      "adjust_type": "qfq",
+      "daily_quote": {
+        "open": 15.3,
+        "close": 15.75,
+        "high": 16.0,
+        "low": 15.2,
+        "amount": 1200000
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "Invalid stock code provided."
+      }
+    }
+  },
+  "description": "SELECT TIMESERIES.PRICE.<open|close|high|low|amount>\nFROM A_SHARE\nWHERE QUERY_DATE = <YYYY-MM-DD>\n  AND HISTORY_PERIOD = (START_DATE = <YYYYMMDD> AND END_DATE = <YYYYMMDD>)\n  AND ADJUST = <''|qfq|hfq>\n  AND [IDENTIFY BY (CODE = <code> OR NAME = <name>)]",
+  "tool_alternative": [
+    "get_a_stock_daily_price",
+    "get_last_n_trading_days"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

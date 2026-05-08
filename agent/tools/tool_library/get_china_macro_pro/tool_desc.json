@@ -1,0 +1,135 @@
+{
+  "tool_name": "get_china_macro_pro",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "macro",
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "indicator_name",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.NAME",
+      "enum": [
+        "cpi",
+        "fiscal_revenue",
+        "money_supply",
+        "gold_forex_reserves",
+        "central_bank_balance_sheet"
+      ],
+      "required": true
+    },
+    {
+      "field": "target_time",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "target_metric",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.TARGET",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "summary",
+      "semantic_type": "metadata",
+      "description": "Summary of the data query result."
+    },
+    {
+      "field": "latest_data_time",
+      "semantic_type": "time_range",
+      "description": "The latest available data time for the indicator."
+    },
+    {
+      "field": "available_metrics",
+      "semantic_type": "list",
+      "description": "List of available metrics for the indicator."
+    },
+    {
+      "field": "guidance",
+      "semantic_type": "metadata",
+      "description": "Guidance message for further data retrieval."
+    },
+    {
+      "field": "indicator_name",
+      "semantic_type": "option",
+      "description": "The name of the macroeconomic indicator."
+    },
+    {
+      "field": "time_period",
+      "semantic_type": "time_range",
+      "description": "The specific time period for the queried data."
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "option",
+      "description": "The name of the metric within the indicator data."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the queried metric. May be a number or a percentage string."
+    }
+  ],
+  "produces": [
+    "macroeconomic_data"
+  ],
+  "consumes": [
+    "indicator_name",
+    "time_period",
+    "metric_name"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns structured error messages."
+  },
+  "examples": {
+    "parameter_template": {
+      "indicator_name": "GDP Growth Rate",
+      "target_time": "2023-09",
+      "target_metric": "yearly_change"
+    },
+    "return_shape_example": {
+      "summary": "The GDP growth rate for September 2023 shows a positive trend.",
+      "latest_data_time": "2023-09",
+      "available_metrics": [
+        "yearly_change",
+        "quarterly_change",
+        "monthly_change"
+      ],
+      "guidance": "For more detailed analysis, consider querying quarterly data.",
+      "indicator_name": "GDP Growth Rate",
+      "time_period": "2023-09",
+      "metric_name": "yearly_change",
+      "value": "+5.86%"
+    }
+  },
+  "description": "SELECT MACRO_INDICATOR_METRIC\nFROM NBS\nWHERE INDICATOR = <cpi|fiscal_revenue|money_supply|gold_forex_reserves|central_bank_balance_sheet>\n  AND TIME = <target_time>\n  AND METRIC = <target_metric>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_nbs_region_data",
+    "get_ppi_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

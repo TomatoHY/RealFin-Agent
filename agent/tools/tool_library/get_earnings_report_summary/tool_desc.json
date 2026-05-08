@@ -1,0 +1,130 @@
+{
+  "tool_name": "get_earnings_report_summary",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.COLUMN_LABEL",
+      "enum": [
+        "每股收益",
+        "营业总收入-营业总收入",
+        "营业总收入-同比增长",
+        "营业总收入-季度环比增长",
+        "净利润-净利润",
+        "净利润-同比增长",
+        "净利润-季度环比增长",
+        "每股净资产",
+        "净资产收益率",
+        "每股经营现金流量",
+        "销售毛利率"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The 6-digit stock code."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The Chinese name of the stock."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The financial report date."
+    },
+    {
+      "field": "financial_statement",
+      "semantic_type": "metadata",
+      "description": "The type of financial statement, e.g., 'Earnings Report Summary'."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "entity",
+      "description": "The name of the financial item queried."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the queried financial item. Percentage string (e.g., '9.97%') if applicable."
+    }
+  ],
+  "produces": [
+    "financial_report_summary"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "2023-09-30",
+      "column_label": "营业总收入-同比增长",
+      "name": "贵州茅台",
+      "code": "600519"
+    },
+    "return_shape_example": {
+      "stock_code": "600519",
+      "stock_name": "贵州茅台",
+      "report_date": "2023-09-30",
+      "financial_statement": "Earnings Report Summary",
+      "item_name": "营业总收入-同比增长",
+      "value": "+5.86%"
+    }
+  },
+  "description": "SELECT EARNINGS_REPORT_SUMMARY.METRIC.<每股收益|营业总收入-营业总收入|营业总收入-同比增长|营业总收入-季度环比增长|净利润-净利润|净利润-同比增长|净利润-季度环比增长|每股净资产|净资产收益率|每股经营现金流量|销售毛利率>\nFROM A_SHARE\nWHERE REPORT_DATE = <date>\n  [AND (IDENTIFY BY NAME = <name> OR IDENTIFY BY CODE = <code>)]",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

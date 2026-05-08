@@ -1,0 +1,225 @@
+{
+  "tool_name": "get_rmb_central_parity_rate_change",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "forex",
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "currencies",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.CURRENCY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "日期",
+      "semantic_type": "time_range",
+      "description": "Date, formatted as 'YYYY-MM-DD'."
+    },
+    {
+      "field": "美元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the USD central parity rate."
+    },
+    {
+      "field": "欧元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the EUR central parity rate."
+    },
+    {
+      "field": "日元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the JPY central parity rate."
+    },
+    {
+      "field": "港元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the HKD central parity rate."
+    },
+    {
+      "field": "英镑_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the GBP central parity rate."
+    },
+    {
+      "field": "林吉特_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the MYR central parity rate."
+    },
+    {
+      "field": "卢布_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the RUB central parity rate."
+    },
+    {
+      "field": "澳元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the AUD central parity rate."
+    },
+    {
+      "field": "加元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the CAD central parity rate."
+    },
+    {
+      "field": "新西兰元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the NZD central parity rate."
+    },
+    {
+      "field": "新加坡元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the SGD central parity rate."
+    },
+    {
+      "field": "瑞士法郎_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the CHF central parity rate."
+    },
+    {
+      "field": "兰特_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the ZAR central parity rate."
+    },
+    {
+      "field": "韩元_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the KRW central parity rate."
+    },
+    {
+      "field": "迪拉姆_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the AED central parity rate."
+    },
+    {
+      "field": "里亚尔_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the SAR central parity rate."
+    },
+    {
+      "field": "福林_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the HUF central parity rate."
+    },
+    {
+      "field": "兹罗提_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the PLN central parity rate."
+    },
+    {
+      "field": "丹麦克朗_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the DKK central parity rate."
+    },
+    {
+      "field": "瑞典克朗_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the SEK central parity rate."
+    },
+    {
+      "field": "挪威克朗_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the NOK central parity rate."
+    },
+    {
+      "field": "里拉_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the TRY central parity rate."
+    },
+    {
+      "field": "比索_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the MXN central parity rate."
+    },
+    {
+      "field": "泰铢_涨跌幅",
+      "semantic_type": "value",
+      "description": "Daily change percentage of the THB central parity rate."
+    }
+  ],
+  "produces": [
+    "currency_rate_change"
+  ],
+  "consumes": [
+    "currency_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks but does not raise exceptions."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2023-09-01",
+      "end_date": "2023-09-30",
+      "currencies": [
+        "USD",
+        "EUR",
+        "JPY"
+      ]
+    },
+    "return_shape_example": {
+      "日期": "2023-09-15",
+      "美元_涨跌幅": "+0.45%",
+      "欧元_涨跌幅": "-0.32%",
+      "日元_涨跌幅": "+0.12%",
+      "港元_涨跌幅": "+0.05%",
+      "英镑_涨跌幅": "-0.20%",
+      "林吉特_涨跌幅": "+0.10%",
+      "卢布_涨跌幅": "-0.15%",
+      "澳元_涨跌幅": "+0.25%",
+      "加元_涨跌幅": "-0.05%",
+      "新西兰元_涨跌幅": "+0.30%",
+      "新加坡元_涨跌幅": "-0.10%",
+      "瑞士法郎_涨跌幅": "+0.40%",
+      "兰特_涨跌幅": "-0.25%",
+      "韩元_涨跌幅": "+0.15%",
+      "迪拉姆_涨跌幅": "+0.05%",
+      "里亚尔_涨跌幅": "-0.10%",
+      "福林_涨跌幅": "+0.20%",
+      "兹罗提_涨跌幅": "-0.30%",
+      "丹麦克朗_涨跌幅": "+0.35%",
+      "瑞典克朗_涨跌幅": "-0.05%",
+      "挪威克朗_涨跌幅": "+0.50%",
+      "里拉_涨跌幅": "-0.40%",
+      "比索_涨跌幅": "+0.25%",
+      "泰铢_涨跌幅": "-0.15%",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The currency 'XYZ' is not supported."
+      }
+    }
+  },
+  "description": "SELECT DAILY_CHANGE.RMB_CENTRAL_PARITY_RATE\nFROM FOREX\nWHERE TIME.START = <start_date>\n  AND TIME.END = <end_date>\n  AND CURRENCY IN <currencies>",
+  "tool_alternative": [
+    "get_currency_rate_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_fx_spot_quote_value",
+    "get_monthly_avg_currency_rate"
+  ]
+}

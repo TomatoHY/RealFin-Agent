@@ -1,0 +1,117 @@
+{
+  "tool_name": "get_china_car_sales_cpca",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "market_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET_TYPE",
+      "enum": [
+        "new_energy_vehicle",
+        "passenger_car",
+        "commercial_vehicle"
+      ],
+      "required": true
+    },
+    {
+      "field": "metric_type",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.TYPE",
+      "enum": [
+        "sales",
+        "production",
+        "wholesale",
+        "export"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_month",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.MONTH",
+      "required": true
+    },
+    {
+      "field": "query_year",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.YEAR",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is '乘联会(CPCA)'."
+    },
+    {
+      "field": "market_type",
+      "semantic_type": "metadata",
+      "description": "The display name of the market type."
+    },
+    {
+      "field": "metric_type",
+      "semantic_type": "metadata",
+      "description": "The type of metric queried."
+    },
+    {
+      "field": "time_period",
+      "semantic_type": "record",
+      "description": "The time period of the data, including year and month."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the queried metric. Unit: 10k vehicles"
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "The unit of the value, which is '万辆'."
+    }
+  ],
+  "produces": [
+    "car_sales_data"
+  ],
+  "consumes": [
+    "market_type",
+    "metric_type",
+    "time_period"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "market_type": "乘用车",
+      "metric_type": "销量",
+      "query_month": "9月",
+      "query_year": 2023
+    },
+    "return_shape_example": {
+      "source": "乘联会(CPCA)",
+      "market_type": "乘用车",
+      "metric_type": "销量",
+      "time_period": {
+        "year": 2023,
+        "month": "9月"
+      },
+      "value": "200.5",
+      "unit": "万辆"
+    }
+  },
+  "description": "SELECT CPCA_MONTHLY_STATISTIC\nFROM ECONOMY\nWHERE MARKET = <new_energy_vehicle|passenger_car|commercial_vehicle>\n  AND METRIC = <sales|production|wholesale>\n  AND MONTH = <query_month>\n  AND YEAR = <query_year>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

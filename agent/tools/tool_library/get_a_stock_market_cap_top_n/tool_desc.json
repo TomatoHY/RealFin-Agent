@@ -1,0 +1,158 @@
+{
+  "tool_name": "get_a_stock_market_cap_top_n",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "enum": [
+        "all",
+        "sh",
+        "sz",
+        "bj"
+      ],
+      "required": true
+    },
+    {
+      "field": "n",
+      "semantic_type": "dsl_slot",
+      "description": "THRESHOLD.N",
+      "required": true
+    },
+    {
+      "field": "cap_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.CAP_TYPE",
+      "enum": [
+        "total",
+        "circulating"
+      ],
+      "required": true
+    },
+    {
+      "field": "include_prices",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.INCLUDE_PRICES",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "The type of analysis performed."
+    },
+    {
+      "field": "market",
+      "semantic_type": "metadata",
+      "description": "The display name of the market queried."
+    },
+    {
+      "field": "ranking_basis",
+      "semantic_type": "metadata",
+      "description": "The basis for ranking the stocks, either '总市值' for total market cap or '流通市值' for circulating market cap."
+    },
+    {
+      "field": "top_n",
+      "semantic_type": "value",
+      "description": "The number of top stocks returned."
+    },
+    {
+      "field": "ranking_results",
+      "semantic_type": "list",
+      "description": "A list of the top N stocks ranked by market capitalization."
+    }
+  ],
+  "produces": [
+    "market_cap_ranking"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle exceptions internally."
+  },
+  "examples": {
+    "parameter_template": {
+      "market": "sh",
+      "n": 5,
+      "cap_type": "total",
+      "include_prices": true
+    },
+    "return_shape_example": {
+      "analysis_type": "Market Cap Ranking",
+      "market": "Shanghai Stock Exchange",
+      "ranking_basis": "总市值",
+      "top_n": 5,
+      "ranking_results": [
+        {
+          "rank": 1,
+          "code": "600519",
+          "name": "贵州茅台",
+          "market_cap": "2.5T",
+          "latest_price": "1800.50",
+          "open_price": "1780.00"
+        },
+        {
+          "rank": 2,
+          "code": "601318",
+          "name": "中国平安",
+          "market_cap": "1.5T",
+          "latest_price": "85.30",
+          "open_price": "84.00"
+        },
+        {
+          "rank": 3,
+          "code": "600036",
+          "name": "招商银行",
+          "market_cap": "1.2T",
+          "latest_price": "55.20",
+          "open_price": "54.50"
+        },
+        {
+          "rank": 4,
+          "code": "601166",
+          "name": "兴业银行",
+          "market_cap": "1.0T",
+          "latest_price": "25.60",
+          "open_price": "25.00"
+        },
+        {
+          "rank": 5,
+          "code": "601398",
+          "name": "工商银行",
+          "market_cap": "900B",
+          "latest_price": "5.60",
+          "open_price": "5.50"
+        }
+      ],
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The specified market 'xyz' is not recognized. Please use 'sh', 'sz', or 'bj'."
+      }
+    }
+  },
+  "description": "SELECT TOP_N_STOCKS_BY_MARKET_CAP\nFROM A_SHARE\nWHERE MARKET = <all|sh|sz|bj>\n  AND TOP_N = <n>\n  AND CAP_TYPE = <total|circulating>\n  AND INCLUDE_PRICES = <include_prices>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "search_kg"
+  ]
+}

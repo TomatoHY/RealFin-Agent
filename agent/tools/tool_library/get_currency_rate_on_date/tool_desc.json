@@ -1,0 +1,95 @@
+{
+  "tool_name": "get_currency_rate_on_date",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "forex"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "currency_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.CURRENCY",
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "currency_name",
+      "semantic_type": "value",
+      "description": "The name of the currency queried."
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "value",
+      "description": "The date that was queried."
+    },
+    {
+      "field": "actual_date",
+      "semantic_type": "value",
+      "description": "The actual date for which the exchange rate is provided."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The exchange rate value of the specified currency against the Chinese Yuan (CNY) on the actual date."
+    }
+  ],
+  "produces": [
+    "exchange_rate"
+  ],
+  "consumes": [
+    "currency_name",
+    "query_date"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "currency_name": "USD",
+      "query_date": "2023-10-15"
+    },
+    "return_shape_example": {
+      "currency_name": "USD",
+      "query_date": "2023-10-15",
+      "actual_date": "2023-10-14",
+      "value": 7.12,
+      "error": {
+        "type": "empty_result",
+        "message": "No exchange rate data available for the specified date."
+      }
+    }
+  },
+  "description": "SELECT EXCHANGE_RATE\nFROM FOREX\nWHERE CURRENCY = <currency_name>\n  AND DATE = <query_date>",
+  "tool_alternative": [
+    "convert_currency_amount",
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_fx_spot_quote_value",
+    "get_rmb_central_parity_rate_change"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "convert_currency_amount",
+    "get_currency_history_value",
+    "get_current_latest_value",
+    "get_fx_spot_quote_value",
+    "get_monthly_avg_currency_rate",
+    "get_rmb_central_parity_rate_change"
+  ]
+}

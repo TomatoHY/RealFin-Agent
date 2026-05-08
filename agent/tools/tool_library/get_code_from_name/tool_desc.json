@@ -1,0 +1,105 @@
+{
+  "tool_name": "get_code_from_name",
+  "tool_role": "R0b: Symbol / Code Resolution",
+  "domain": [
+    "stock",
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME\n正例：name='中国重工'（配合 market='a' 一起传入，用于稳定解析股票代码后再用 code 去查财报）\n反例（错误做法）：只传 market='a' 不传 name（会导致缺少必要信息，无法从名称解析到代码，后续查询容易返回 None 并引发下游报错）\n触发条件：当问题涉及“比较/最早/最晚/谁”且候选为多个公司名称时，必须对每个候选公司分别传入其 name（不要只传其中一两家）；当后续需要按同一字段（如上市日期 listed_date）进行显式比较时，先用 name+market 把所有候选转成可统一比较的 code。\n禁用条件：当仅提供 market 而无 name 的情况下禁止调用（会导致无法从名称解析到代码）；当已获得唯一 code 且无需名称解析时，不要再用 name 反查。\n边界规则：name 必须与待比较候选集合一一对应并全部覆盖；若 name 存在简称/别名导致返回空或歧义，应先补齐/修正 name（例如使用公司全称）再继续；任一候选 name 未成功解析出 code 时，不得凭常识猜测其上市时间或直接给出“最早/最晚”结论，需补查或声明无法比较。\n触发条件：当问题目标是比较候选公司的“上市时间/上市日期”并输出“最早/最晚/排序/哪家”时，必须对候选集合中的每一个公司都提供 name 并逐一调用本工具（不得只解析部分候选后就进入比较）；当 search_kg 返回的是集团/行业标签（如“国有三大航”）的成员公司列表时，必须将每个成员公司名称逐一填入 name 以形成完整可比集合。\n禁用条件：当 name 仅为模糊称谓/简称且会高概率导致歧义（如只给“南航/东航”但题库要求全称）时，禁止直接用该 name 进行映射，应先改为公司全称或结合其他上下文信息消歧后再传入；当候选仅有 1 家且题目不涉及任何比较/最早/最晚/排序时，不要为了“可能比较”而批量枚举无关 name。\n边界规则：对“最早/最晚”类问题，name 列表必须覆盖所有需要参与比较的实体（不得遗漏成员导致结论偏差）；若任一 name 映射失败或返回不唯一 code，必须先修正 name/补充别名/限定 market 直到得到唯一 code，再交由 get_stock_listing_date 查询日期并完成最小/最大比较，否则不得输出最终结论。",
+      "required": false
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET\n正例：market='a'（A股场景；例如查询“中国重工/振华重工”这类A股公司名称时优先选择 'a'）\n反例（错误做法）：market 缺失或为空（required=true，缺参会导致工具调用不完整，无法返回股票代码）\n触发条件：当需要对多个候选公司做可比较字段（如上市日期）的对齐时，必须为所有候选使用一致且合理的 market 约束（除非题目明确跨市场）；当公司名称可能在不同市场存在同名/不同代码时，通过指定 market 降低歧义。\n禁用条件：market 缺失/为空时禁止调用；当题目明确限定市场（如“国有三大航”对应 A 股）时禁止随意用 'all' 造成多结果或歧义，除非确实需要跨市场穷举并能在下游做去重/筛选。\n边界规则：比较类问题要求候选处在同一可比范围内：优先选题目语境对应的单一市场（例如 A 股用 'a'）；若必须使用 'all' 导致多代码返回或不唯一，需在下游明确筛选规则并保证每个候选最终只有一个可比较 code，否则不得进入“最早/最晚”比较与结论输出。",
+      "enum": [
+        "a",
+        "hk",
+        "us",
+        "all"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code corresponding to the given stock name."
+    }
+  ],
+  "produces": [
+    "stock_code"
+  ],
+  "consumes": [
+    "stock_name",
+    "market_option"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Returns a message if the code is not found."
+  },
+  "examples": {
+    "parameter_template": {
+      "name": "Apple",
+      "market": "US"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "error": "Stock code not found for the given name and market."
+    }
+  },
+  "description": "SELECT STOCK_CODE\nFROM A_SHARE\nWHERE MARKET = <a|hk|us|all>\n      [AND NAME = <name>]\n触发条件：当任务需要将公司“名称”稳定映射为“股票代码”（尤其是后续要用 code 去查询上市日期/财务/基本信息），或当问题包含“比较/最早/最晚/哪家”且需要对齐多个候选公司到同一可比较字段（如上市日期）时，先用本工具为每个候选逐一获取 code。\n禁用条件：当已明确给出且无需再解析的股票代码（code 已知/已在上游工具返回）时不要重复调用；当 market 无法确定且会导致映射歧义、且已有更可靠的唯一标识可用时不要仅凭猜测调用。\n边界规则：比较类问题必须先对齐候选集合（列全所有需要比较的公司），再对每个候选用同一 market+name 规则获取 code；任一候选未取到 code 时，不得直接输出比较结论，需补查（调整 market/名称别名）或明确声明“因缺失某候选 code/上市日期无法完成比较”。\n触发条件：当上游已通过 search_kg 确定了实体集合、且任务目标包含“上市时间/上市日期/最早/最晚/比较/排序”时，本工具必须作为 get_stock_listing_date 之前的衔接步骤被调用（优先用 code 驱动后续日期查询以减少 None）；当候选公司≥2且需要返回“哪家最早/最晚”时，必须先为每个候选拿到唯一 code 再进入日期查询与取最小/最大。\n禁用条件：当题目要求直接返回“上市日期”且已明确提供合法 A 股 code（无需 name 映射）时禁止绕路再用本工具；当候选集合尚未确定（例如只给出行业/集团称谓而未列出成员）时，禁止跳过 search_kg 直接猜测公司 name 进行映射。\n边界规则：本工具只负责 name->code 的稳定映射，不得在未调用 get_stock_listing_date 的情况下仅凭常识推断“上市最早/最晚”；若某候选映射出多个 code（跨市场/同名）必须结合题目市场约束（如 A 股）筛到唯一 code 后才可进入“最早/最晚”比较，否则必须继续消歧或声明无法比较。",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_a_dividend_payout",
+    "get_a_stock_daily_price",
+    "get_a_stock_market_cap_top_n",
+    "get_balance_sheet",
+    "get_dividend_allotment_history",
+    "get_earnings_announcement",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_hk_stock_basic_info",
+    "get_hk_stock_daily_price",
+    "get_income_statement",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_comment",
+    "get_stock_consensus_forecast",
+    "get_stock_detailed_metric_forecast",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stock_individual_basic_info_xq_value",
+    "get_stock_listing_date",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_stock_sse_deal_daily_value",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_top_10_shareholders",
+    "get_us_stock_daily_price",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

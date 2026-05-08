@@ -1,0 +1,137 @@
+{
+  "tool_name": "get_income_statement",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE\n触发条件：当查询指定财报报告期的数据时必须填写；应填写标准报告期日期（YYYY-MM-DD），例如年报通常为“YYYY-12-31”（如 2023 年报填“2023-12-31”），也可为中报“YYYY-06-30”、一季报“YYYY-03-31”、三季报“YYYY-09-30”。\n禁用条件：禁止仅传年份（如“2023”）或非标准日期/模糊时间范围（如“2023年”）作为 date；此类输入可能导致工具端无法匹配 REPORT_DATE 返回 None。\n边界规则：若用户只给出年份，应先将其规范化为对应的报告期日期再调用（默认年报取“YYYY-12-31”，除非用户明确指定季报/中报）；若跨多期比较需分别用多个标准报告期日期逐次查询，不要将多个日期拼接在一个 date 中。",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "enum": [
+        "净利润",
+        "净利润同比",
+        "营业总收入",
+        "营业总收入同比",
+        "营业总支出-营业支出",
+        "营业总支出-销售费用",
+        "营业总支出-管理费用",
+        "营业总支出-财务费用",
+        "营业总支出-营业总支出",
+        "营业利润",
+        "利润总额"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME | 注意：name不准则先改用code",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE\n触发条件：当已知证券代码或已通过 get_code_from_name 获取到唯一代码时，优先使用 code 作为筛选条件以提升命中率与稳定性。\n禁用条件：当 code 不确定、为空或与目标公司不一致时不要填写；若 code 与 name 同时填写且可能冲突，避免混用导致取到非预期公司数据。\n边界规则：建议同一问题的多次查询统一使用同一个 code（先解析公司->code 再查财报）；若 name 存在重名/简称歧义，应以 code 为准。 | 注意：优先填code，避免误填name",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code of the queried company."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The name of the stock as retrieved from the data."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The report date for which the income statement is queried."
+    },
+    {
+      "field": "financial_statement",
+      "semantic_type": "metadata",
+      "description": "The type of financial statement. Always 'Income Statement'."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "entity",
+      "description": "The name of the financial item queried."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the queried financial item. Unit: CNY."
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "The unit of the financial item value. Always '元'."
+    }
+  ],
+  "produces": [
+    "financial_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "financial_item"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "20230630",
+      "item_name": "Net Income",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "stock_name": "Apple Inc.",
+      "report_date": "2023-06-30",
+      "financial_statement": "Income Statement",
+      "item_name": "Net Income",
+      "value": 55980000000.0,
+      "unit": "元"
+    }
+  },
+  "description": "SELECT INCOME_STATEMENT_ITEM.<净利润|净利润同比|营业总收入|营业总收入同比|营业总支出-营业支出|营业总支出-销售费用|营业总支出-管理费用|营业总支出-财务费用|营业总支出-营业总支出|营业利润|利润总额>\nFROM A_SHARE\nWHERE REPORT_DATE = <date>\n  [AND (CODE = <code> OR NAME = <name>)]\n触发：当需要按“报告期（年报/中报/季报）”查询A股上市公司利润表指标（如净利润、营业总收入等）时使用；优先在已明确证券代码（code）且能提供标准报告期日期（YYYY-MM-DD）的情况下调用。\n禁用：当无法提供标准报告期日期（例如仅有“2023”而没有对应的报告期日期）或公司标识不明确（code/name 均缺失且无法先用 get_code_from_name 获取 code）时不要调用，以避免因匹配不到报告期而返回 None 并引发后续下标访问错误。",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

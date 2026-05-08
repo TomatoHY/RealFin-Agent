@@ -1,0 +1,86 @@
+{
+  "tool_name": "calculate_bond_yield_change_on_date",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "target_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "curve_name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CURVE_NAME",
+      "required": false
+    },
+    {
+      "field": "terms",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.TERMS",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "期限",
+      "semantic_type": "value",
+      "description": "The term of the bond."
+    },
+    {
+      "field": "收益率(%)",
+      "semantic_type": "value",
+      "description": "The yield rate for the specified date. Unit: percentage"
+    },
+    {
+      "field": "前一日收益率(%)",
+      "semantic_type": "value",
+      "description": "The yield rate for the previous trading day. Unit: percentage"
+    },
+    {
+      "field": "变化幅度(基点)",
+      "semantic_type": "value",
+      "description": "The change in yield rate compared to the previous trading day, in basis points."
+    }
+  ],
+  "produces": [
+    "yield_change_analysis"
+  ],
+  "consumes": [
+    "bond_yield_data"
+  ],
+  "error_model": {
+    "observability": "exception",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "The tool uses try-except blocks to handle exceptions."
+  },
+  "examples": {
+    "parameter_template": {
+      "target_date": "2023-10-15",
+      "curve_name": "中债国债收益率曲线",
+      "terms": [
+        "1年",
+        "5年",
+        "10年"
+      ]
+    },
+    "return_shape_example": {
+      "期限": "5年",
+      "收益率(%)": 3.25,
+      "前一日收益率(%)": 3.2,
+      "变化幅度(基点)": 5
+    }
+  },
+  "description": "SELECT BOND_YIELD_CHANGE\nFROM ECONOMY\nWHERE TIME = <target_date>\n  [AND CURVE = <curve_name>]\n  [AND TERMS = <terms>]",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

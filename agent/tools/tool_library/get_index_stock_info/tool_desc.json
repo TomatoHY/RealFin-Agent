@@ -1,0 +1,62 @@
+{
+  "tool_name": "get_index_stock_info",
+  "tool_role": "R0b: Symbol / Code Resolution",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "index_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.INDEX",
+      "required": true
+    },
+    {
+      "field": "info_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.INFO_TYPE",
+      "enum": [
+        "code",
+        "publish_date"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "returns",
+      "semantic_type": "value",
+      "description": "Returns the found information (code or date) on success, or an error message string on failure"
+    }
+  ],
+  "produces": [
+    "index_code",
+    "index_publish_date"
+  ],
+  "consumes": [
+    "index_name"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except"
+  },
+  "examples": {
+    "parameter_template": {
+      "index_name": "上证指数",
+      "info_type": "code"
+    },
+    "return_shape_example": {
+      "returns": "000001"
+    }
+  },
+  "description": "SELECT INDEX.<code|publish_date>\nFROM INDEX\nWHERE IDENTIFY BY NAME = <index_name>\n  AND INFO_TYPE = <code|publish_date>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

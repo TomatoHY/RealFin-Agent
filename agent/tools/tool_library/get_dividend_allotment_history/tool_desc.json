@@ -1,0 +1,124 @@
+{
+  "tool_name": "get_dividend_allotment_history",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "report_period",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.COLUMN_LABEL",
+      "enum": [
+        "送转股份-送转总比例",
+        "送转股份-送股比例",
+        "送转股份-转股比例",
+        "现金分红-现金分红比例",
+        "现金分红-股息率",
+        "方案进度",
+        "股权登记日",
+        "除权除息日"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier for the stock, either name or code."
+    },
+    {
+      "field": "report_period",
+      "semantic_type": "time_range",
+      "description": "The reporting period for the dividend allotment data."
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "entity",
+      "description": "The name of the metric or column label requested."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the requested metric for the specified report period."
+    },
+    {
+      "field": "dividend_plan_description",
+      "semantic_type": "metadata",
+      "description": "Description of the dividend plan for the specified report period."
+    }
+  ],
+  "produces": [
+    "dividend_allotment_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "report_period"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "report_period": "2023-01-01 to 2023-12-31",
+      "column_label": "dividend_yield",
+      "name": null,
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_identifier": "AAPL",
+      "report_period": "2023-01-01 to 2023-12-31",
+      "metric_name": "dividend_yield",
+      "value": 0.65,
+      "dividend_plan_description": "Quarterly dividend of $0.22 per share."
+    }
+  },
+  "description": "SELECT DIVIDEND_DISTRIBUTION_PLAN\nFROM A_SHARE\nWHERE IDENTIFY BY (CODE = <code> | NAME = <name>)\n  AND REPORT_PERIOD = <report_period>\n  AND METRIC = <送转总比例|送股比例|转股比例|现金分红比例|股息率|方案进度|股权登记日|除权除息日>",
+  "tool_alternative": [
+    "get_a_dividend_payout"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

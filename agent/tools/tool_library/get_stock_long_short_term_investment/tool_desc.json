@@ -1,0 +1,118 @@
+{
+  "tool_name": "get_stock_long_short_term_investment",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "investment_type",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.INVESTMENT_TYPE",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "股票的标识符，可以是名称或代码."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "报告期的日期."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "数据来源，固定为 'Financial Analysis Indicators'."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "metadata",
+      "description": "查询的投资类型名称，可能是 '长期股票投资(元)' 或 '短期股票投资(元)'."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "查询到的具体数值（元）."
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "单位，固定为 '元'."
+    }
+  ],
+  "produces": [
+    "financial_investment_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "investment_type"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "600519",
+      "query_date": "2023-09-30",
+      "investment_type": "long",
+      "name": "贵州茅台"
+    },
+    "return_shape_example": {
+      "stock_identifier": "600519",
+      "report_date": "2023-09-30",
+      "data_source": "Financial Analysis Indicators",
+      "item_name": "长期股票投资(元)",
+      "value": 150000000.0,
+      "unit": "元"
+    }
+  },
+  "description": "SELECT INVESTMENT.LONG_SHORT_TERM.<investment_type>\nFROM A_SHARE\nWHERE IDENTIFY BY (CODE = <symbol> [AND NAME = <name>])\n  AND REPORT_DATE = <query_date>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

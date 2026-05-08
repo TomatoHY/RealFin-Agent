@@ -1,0 +1,106 @@
+{
+  "tool_name": "get_top_10_shareholders",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "stock_code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.STOCK_CODE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The stock code provided as input."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The report date provided as input."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, in this case, 'Top 10 Shareholders (Eastmoney)'."
+    },
+    {
+      "field": "shareholders",
+      "semantic_type": "list",
+      "description": "List of top 10 shareholders with their details."
+    }
+  ],
+  "produces": [
+    "shareholder_information"
+  ],
+  "consumes": [
+    "stock_code",
+    "report_date"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "2023-09-30",
+      "stock_code": "600519"
+    },
+    "return_shape_example": {
+      "stock_identifier": "600519",
+      "report_date": "2023-09-30",
+      "data_source": "Top 10 Shareholders (Eastmoney)",
+      "shareholders": [
+        {
+          "rank": 1,
+          "name": "China Securities Finance Corporation Limited",
+          "shares_held": 5000000,
+          "percentage_of_total_shares": 2.5,
+          "change_status": "+0.50%"
+        },
+        {
+          "rank": 2,
+          "name": "Central Huijin Asset Management Ltd.",
+          "shares_held": 4500000,
+          "percentage_of_total_shares": 2.25,
+          "change_status": "0.00%"
+        }
+      ],
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The stock code provided is not valid."
+      }
+    }
+  },
+  "description": "SELECT TOP_10_SHAREHOLDERS\nFROM A_SHARE\nWHERE DATE = <date> AND IDENTIFY BY CODE = <stock_code>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_hk_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_individual_basic_info_xq_value",
+    "get_stock_listing_date",
+    "search_kg"
+  ]
+}

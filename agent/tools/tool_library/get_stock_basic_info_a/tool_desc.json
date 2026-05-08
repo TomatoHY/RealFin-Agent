@@ -1,0 +1,114 @@
+{
+  "tool_name": "get_stock_basic_info_a",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: symbol | TYPE: identifier | ENUM: null | REQUIRED: true\nMEANING: IDENTIFIER.SYMBOL | 补充：用于 WHERE 子句的唯一标识输入（CODE=<symbol> 或 NAME=<symbol>）；在比较/最早/最晚类任务中，必须为每个候选提供一个可解析到同一证券的 symbol（建议优先用股票代码，其次股票简称/全称），若某候选查询失败/多义/缺失需更换为更精确的 symbol 补查后再进入显式比较步骤，禁止在候选未对齐或值未补齐时直接输出结论。",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: item_name | TYPE: string | ENUM: [\"最新\",\"股票代码\",\"股票简称\",\"总股本\",\"流通股\",\"总市值\",\"流通市值\",\"行业\",\"上市时间\"] | REQUIRED: true\nMEANING: ENTITY.ITEM_NAME | 补充：当任务目标是比较上市时间（如“最早/最晚上市”）时，必须对每个候选统一选择 item_name=\"上市时间\" 以获得同口径可比较值，并在取齐全部候选后执行 MIN/MAX 显式比较；如返回为空/缺失/格式不可比较，需先补查直至可比较或声明无法严格比较，禁止用其他 item_name 的字段替代“上市时间”进行隐式推断。",
+      "enum": [
+        "最新",
+        "股票代码",
+        "股票简称",
+        "总股本",
+        "流通股",
+        "总市值",
+        "流通市值",
+        "行业",
+        "上市时间"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code of the company."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The name of the company."
+    },
+    {
+      "field": "market",
+      "semantic_type": "metadata",
+      "description": "The market type."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item with its name and value."
+    }
+  ],
+  "produces": [
+    "stock_basic_info"
+  ],
+  "consumes": [
+    "stock_code",
+    "item_name"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Handles exceptions and returns empty on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "600519",
+      "item_name": "current_price"
+    },
+    "return_shape_example": {
+      "stock_code": "600519",
+      "stock_name": "贵州茅台",
+      "market": "A股",
+      "data_source": "Shanghai Stock Exchange",
+      "requested_item": {
+        "name": "current_price",
+        "value": 1850.5
+      },
+      "error_example": {
+        "error_type": "invalid_parameter",
+        "error_message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT STOCK_INFO.<最新|股票代码|股票简称|总股本|流通股|总市值|流通市值|行业|上市时间>\nFROM A_SHARE\nWHERE IDENTIFY BY (CODE = <symbol> OR NAME = <symbol>)\n[CONSTRAINT]\n- 当问题属于比较/最早/最晚/最小值/最大值（例如“谁上市时间最早”）时：先对齐候选集合（列出全部候选），再对每个候选使用同一 item_name=上市时间 获取可比较值，显式执行 MIN/MAX 比较后再给出结论。\n- 若任一候选未返回“上市时间”或返回缺失/不可解析：必须补查该候选（例如更换 symbol 为股票代码或股票简称再次查询）；在仍无法补齐全部候选的可比较值时，需声明无法完成严格比较，禁止凭常识猜测直接下结论。\n- “上市时间”为对比字段时，优先以本工具 item_name=上市时间 的结果作为统一口径；仅在需要进一步校验/补全时再调用其他上市日期相关工具，并保持口径一致后再比较。",
+  "tool_alternative": [
+    "get_stock_basic_info"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_hk_stock_basic_info",
+    "get_stock_basic_info",
+    "get_stock_individual_basic_info_xq_value",
+    "get_stock_listing_date",
+    "get_top_10_shareholders",
+    "search_kg"
+  ]
+}

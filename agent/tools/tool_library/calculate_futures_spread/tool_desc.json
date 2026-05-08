@@ -1,0 +1,123 @@
+{
+  "tool_name": "calculate_futures_spread",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "symbol1",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "symbol2",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "Type of analysis performed."
+    },
+    {
+      "field": "symbol_base",
+      "semantic_type": "identifier",
+      "description": "The base futures contract symbol."
+    },
+    {
+      "field": "symbol_target",
+      "semantic_type": "identifier",
+      "description": "The target futures contract symbol."
+    },
+    {
+      "field": "calculation_formula",
+      "semantic_type": "metadata",
+      "description": "The formula used for calculating the spread."
+    },
+    {
+      "field": "query_period_start",
+      "semantic_type": "time_range",
+      "description": "The start date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "query_period_end",
+      "semantic_type": "time_range",
+      "description": "The end date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "max_spread",
+      "semantic_type": "record",
+      "description": "The maximum spread value and date."
+    },
+    {
+      "field": "min_spread",
+      "semantic_type": "record",
+      "description": "The minimum spread value and date."
+    }
+  ],
+  "produces": [
+    "futures_spread_analysis"
+  ],
+  "consumes": [
+    "futures_contract_data"
+  ],
+  "error_model": {
+    "observability": "exception",
+    "error_types": [
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Tool uses try-except blocks to handle exceptions."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol1": "AAPL",
+      "symbol2": "TSLA",
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31"
+    },
+    "return_shape_example": {
+      "analysis_type": "futures_spread_analysis",
+      "symbol_base": "AAPL",
+      "symbol_target": "TSLA",
+      "calculation_formula": "Spread = Price(Symbol1) - Price(Symbol2)",
+      "query_period_start": "2023-01-01",
+      "query_period_end": "2023-12-31",
+      "max_spread": {
+        "value": "150.25",
+        "date": "2023-06-15"
+      },
+      "min_spread": {
+        "value": "120.75",
+        "date": "2023-03-10"
+      }
+    }
+  },
+  "description": "SELECT SPREAD_STATISTICS(max, min)\nFROM FUTURES\nWHERE CONTRACT_PAIR = (symbol1, symbol2)\n  AND PERIOD = (start_date, end_date)\n  AND SPREAD = CLOSE(symbol1) - CLOSE(symbol2)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_futures_daily_price"
+  ],
+  "tool_related": [
+    "calculate_futures_minute_spread",
+    "get_futures_daily_price"
+  ]
+}

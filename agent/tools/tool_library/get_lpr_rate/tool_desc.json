@@ -1,0 +1,92 @@
+{
+  "tool_name": "get_lpr_rate",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "indicator_name",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.NAME",
+      "enum": [
+        "LPR1Y",
+        "LPR5Y",
+        "RATE_1",
+        "RATE_2"
+      ],
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "日期",
+      "semantic_type": "record",
+      "description": "The date of the interest rate value, in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "利率",
+      "semantic_type": "value",
+      "description": "The value of the specified interest rate type as a percentage string (e.g., '9.97%')."
+    }
+  ],
+  "produces": [
+    "interest_rate_data"
+  ],
+  "consumes": [
+    "interest_rate_query"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle exceptions internally."
+  },
+  "examples": {
+    "parameter_template": {
+      "indicator_name": "LPR1Y",
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31"
+    },
+    "return_shape_example": {
+      "日期": "2023-09-15",
+      "利率": "3.85%"
+    }
+  },
+  "description": "SELECT LPR_RATE\nFROM ECONOMY\nWHERE INDICATOR = <LPR1Y|LPR5Y|RATE_1|RATE_2>\n  AND START_DATE = <YYYY-MM-DD>\n  AND END_DATE = <YYYY-MM-DD>",
+  "tool_alternative": [
+    "calculate_lpr_rate_change",
+    "get_lpr_rate_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

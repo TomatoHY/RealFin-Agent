@@ -1,0 +1,124 @@
+{
+  "tool_name": "get_futures_price_on_date",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "value",
+      "description": "The date of the market data in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "open",
+      "semantic_type": "value",
+      "description": "The opening price of the futures contract."
+    },
+    {
+      "field": "high",
+      "semantic_type": "value",
+      "description": "The highest price of the futures contract."
+    },
+    {
+      "field": "low",
+      "semantic_type": "value",
+      "description": "The lowest price of the futures contract."
+    },
+    {
+      "field": "close",
+      "semantic_type": "value",
+      "description": "The closing price of the futures contract."
+    },
+    {
+      "field": "volume",
+      "semantic_type": "value",
+      "description": "The trading volume of the futures contract."
+    },
+    {
+      "field": "open_interest",
+      "semantic_type": "value",
+      "description": "The open interest of the futures contract."
+    },
+    {
+      "field": "turnover",
+      "semantic_type": "value",
+      "description": "The turnover of the futures contract."
+    },
+    {
+      "field": "settle",
+      "semantic_type": "value",
+      "description": "The settlement price of the futures contract."
+    },
+    {
+      "field": "pre_settle",
+      "semantic_type": "value",
+      "description": "The previous settlement price of the futures contract."
+    }
+  ],
+  "produces": [
+    "futures_market_data"
+  ],
+  "consumes": [
+    "futures_contract_identifier",
+    "date"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "rb2401",
+      "query_date": "2023-10-15"
+    },
+    "return_shape_example": {
+      "date": "2023-10-15",
+      "open": 4500.5,
+      "high": 4550.75,
+      "low": 4480.25,
+      "close": 4525.0,
+      "volume": 150000,
+      "open_interest": 120000,
+      "turnover": 675000000.0,
+      "settle": 4520.0,
+      "pre_settle": 4500.0,
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided symbol 'rb2401' is not valid for the given date."
+      }
+    }
+  },
+  "description": "SELECT FUTURES.PRICE_DETAILS\nFROM FUTURES\nWHERE IDENTIFY BY (SYMBOL = <futures_symbol>)\n  AND TIME = <query_date>",
+  "tool_alternative": [
+    "get_futures_history"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_foreign_futures_realtime",
+    "get_futures_daily_price",
+    "get_futures_history",
+    "get_sge_benchmark_price",
+    "get_sge_daily_data"
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "tool_name": "get_global_index_spot_value",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "name_or_code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME_OR_CODE",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "code",
+        "name",
+        "close",
+        "change",
+        "change_percent",
+        "high",
+        "low",
+        "previous_close",
+        "amplitude",
+        "last_update_time"
+      ],
+      "required": true
+    },
+    {
+      "field": "force_refresh",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.FORCE_REFRESH",
+      "required": true
+    },
+    {
+      "field": "kwargs",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.VALUE"
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "index_name",
+      "semantic_type": "value",
+      "description": "The name of the global index."
+    },
+    {
+      "field": "index_code",
+      "semantic_type": "value",
+      "description": "The code of the global index."
+    },
+    {
+      "field": "data_type",
+      "semantic_type": "metadata",
+      "description": "Type of data returned, indicating it is the latest realtime spot data."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested data item with label and value."
+    },
+    {
+      "field": "full_quote",
+      "semantic_type": "record",
+      "description": "The full quote details of the index including latest price, change, and other metrics."
+    }
+  ],
+  "produces": [
+    "index_spot_value"
+  ],
+  "consumes": [
+    "index_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns schema-compliant empty results on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "name_or_code": "AAPL",
+      "column_label": "latest_price",
+      "force_refresh": true
+    },
+    "return_shape_example": {
+      "index_name": "S&P 500",
+      "index_code": "SPX",
+      "data_type": "realtime_spot",
+      "requested_item": {
+        "label": "latest_price",
+        "value": "4321.56"
+      },
+      "full_quote": {
+        "latest_price": 4321.56,
+        "change_value": 15.34,
+        "change_percent": "+0.36%",
+        "open_price": 4300.0,
+        "high_price": 4330.0,
+        "low_price": 4290.0,
+        "previous_close": 4306.22,
+        "amplitude": 40.0,
+        "quote_time": "2023-10-05"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided index code is not recognized."
+      }
+    }
+  },
+  "description": "SELECT INDEX.SPOT.<code|name|close|change|change_percent|high|low|previous_close|amplitude|last_update_time>\nFROM INDEX\nWHERE (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)\n  AND FORCE_REFRESH = <boolean>\n  [AND OPTIONS = <kwargs>]",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_index_history",
+    "get_index_realtime",
+    "get_multiple_index_history_df"
+  ]
+}
