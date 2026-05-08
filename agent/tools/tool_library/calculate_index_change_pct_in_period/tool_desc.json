@@ -1,0 +1,126 @@
+{
+  "tool_name": "calculate_index_change_pct_in_period",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "index"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "identifier",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.TOKEN",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "分析类型，固定为 'index_change_percentage_in_period'."
+    },
+    {
+      "field": "index_identifier",
+      "semantic_type": "identifier",
+      "description": "标准化的指数标识符."
+    },
+    {
+      "field": "market_hint",
+      "semantic_type": "metadata",
+      "description": "市场提示信息."
+    },
+    {
+      "field": "query_period",
+      "semantic_type": "time_range",
+      "description": "查询周期的开始和结束日期."
+    },
+    {
+      "field": "actual_trading_period",
+      "semantic_type": "time_range",
+      "description": "实际交易周期的开始和结束日期."
+    },
+    {
+      "field": "period_prices",
+      "semantic_type": "record",
+      "description": "起始和结束交易日的收盘价."
+    },
+    {
+      "field": "calculation_result",
+      "semantic_type": "value",
+      "description": "累计涨跌幅百分比."
+    }
+  ],
+  "produces": [
+    "index_change_percentage"
+  ],
+  "consumes": [
+    "index_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns error description in output."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifier": "沪深300",
+      "start_date": "2023-01-01",
+      "end_date": "2023-06-30",
+      "market": "a"
+    },
+    "return_shape_example": {
+      "analysis_type": "index_change_percentage_in_period",
+      "index_identifier": "沪深300",
+      "market_hint": "a",
+      "query_period": {
+        "start": "2023-01-01",
+        "end": "2023-06-30"
+      },
+      "actual_trading_period": {
+        "start_date": "2023-01-03",
+        "end_date": "2023-06-30"
+      },
+      "period_prices": {
+        "start_price": "4000.50",
+        "end_price": "4500.75"
+      },
+      "calculation_result": {
+        "cumulative_percentage_change": "+12.51%"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided identifier is not valid for the selected market."
+      }
+    }
+  },
+  "description": "SELECT CUMULATIVE_PERCENTAGE_CHANGE, TRADING_DAY_COUNT\nFROM INDEX\nWHERE IDENTIFY BY (CODE = <identifier> OR NAME = <identifier>)\n  AND START_DATE = <start_date>\n  AND END_DATE = <end_date>\n  [AND MARKET = <market>]",
+  "tool_alternative": [
+    "calculate_index_change_pct"
+  ],
+  "tool_dependencies": [
+    "get_index_history"
+  ],
+  "tool_related": []
+}

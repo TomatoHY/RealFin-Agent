@@ -1,0 +1,150 @@
+{
+  "tool_name": "get_stock_board_industry_cons",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "序号",
+      "semantic_type": "value",
+      "description": "序号"
+    },
+    {
+      "field": "code",
+      "semantic_type": "identifier",
+      "description": "股票代码"
+    },
+    {
+      "field": "name",
+      "semantic_type": "value",
+      "description": "股票名称"
+    },
+    {
+      "field": "最新价",
+      "semantic_type": "value",
+      "description": "最新价格"
+    },
+    {
+      "field": "涨跌幅",
+      "semantic_type": "value",
+      "description": "涨跌幅, Unit: percentage"
+    },
+    {
+      "field": "涨跌额",
+      "semantic_type": "value",
+      "description": "涨跌额"
+    },
+    {
+      "field": "成交量",
+      "semantic_type": "value",
+      "description": "成交量, Unit: shares"
+    },
+    {
+      "field": "成交额",
+      "semantic_type": "value",
+      "description": "成交额"
+    },
+    {
+      "field": "振幅",
+      "semantic_type": "value",
+      "description": "振幅, Unit: percentage"
+    },
+    {
+      "field": "最高",
+      "semantic_type": "value",
+      "description": "最高价"
+    },
+    {
+      "field": "最低",
+      "semantic_type": "value",
+      "description": "最低价"
+    },
+    {
+      "field": "今开",
+      "semantic_type": "value",
+      "description": "今开价"
+    },
+    {
+      "field": "昨收",
+      "semantic_type": "value",
+      "description": "昨收价"
+    },
+    {
+      "field": "换手率",
+      "semantic_type": "value",
+      "description": "换手率, Unit: percentage"
+    },
+    {
+      "field": "市盈率-动态",
+      "semantic_type": "value",
+      "description": "市盈率-动态"
+    },
+    {
+      "field": "市净率",
+      "semantic_type": "value",
+      "description": "市净率"
+    },
+    {
+      "field": "错误信息字符串",
+      "semantic_type": "metadata",
+      "description": "错误信息字符串"
+    }
+  ],
+  "produces": [
+    "stock_data"
+  ],
+  "consumes": [
+    "stock_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks"
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "600519"
+    },
+    "return_shape_example": {
+      "序号": 1,
+      "code": "600519",
+      "name": "贵州茅台",
+      "最新价": 1800.5,
+      "涨跌幅": "+2.35%",
+      "涨跌额": 41.3,
+      "成交量": 1500000,
+      "成交额": 2700000000.0,
+      "振幅": "3.20%",
+      "最高": 1820.0,
+      "最低": 1750.0,
+      "今开": 1760.0,
+      "昨收": 1759.2,
+      "换手率": "0.50%",
+      "市盈率-动态": 35.0,
+      "市净率": 10.5,
+      "错误信息字符串": ""
+    }
+  },
+  "description": "SELECT CONSTITUENT_STOCK\nFROM A_SHARE.INDUSTRY_BOARD\nWHERE BOARD IDENTIFY BY SYMBOL = <industry_board_symbol>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_stock_board_industry_list"
+  ],
+  "tool_related": [
+    "get_stock_board_industry_list"
+  ]
+}

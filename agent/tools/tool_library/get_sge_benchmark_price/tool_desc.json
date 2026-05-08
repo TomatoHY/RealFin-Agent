@@ -1,0 +1,107 @@
+{
+  "tool_name": "get_sge_benchmark_price",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "futures",
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "metal",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.METAL",
+      "enum": [
+        "gold",
+        "silver"
+      ],
+      "required": true
+    },
+    {
+      "field": "session",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SESSION",
+      "enum": [
+        "morning",
+        "evening"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is '上海黄金交易所(SGE)'."
+    },
+    {
+      "field": "benchmark_type",
+      "semantic_type": "metadata",
+      "description": "The type of benchmark, either '上海金' for gold or '上海银' for silver."
+    },
+    {
+      "field": "session",
+      "semantic_type": "metadata",
+      "description": "The session of the benchmark price, either '早盘(午盘)' for morning or '晚盘' for evening."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date of the benchmark price in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "price",
+      "semantic_type": "value",
+      "description": "The benchmark price of the metal for the specified session and date."
+    }
+  ],
+  "produces": [
+    "benchmark_price"
+  ],
+  "consumes": [
+    "metal_type",
+    "session_time",
+    "query_date"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally and returns schema-compliant results."
+  },
+  "examples": {
+    "parameter_template": {
+      "metal": "gold",
+      "session": "morning",
+      "query_date": "2023-10-15"
+    },
+    "return_shape_example": {
+      "source": "上海黄金交易所(SGE)",
+      "benchmark_type": "上海金",
+      "session": "早盘(午盘)",
+      "date": "2023-10-15",
+      "price": 450.25
+    }
+  },
+  "description": "SELECT SGE_BENCHMARK_PRICE\nFROM FUTURES\nWHERE METAL = <gold|silver>\n  AND SESSION = <morning|evening>\n  AND DATE = <query_date>",
+  "tool_alternative": [
+    "get_sge_daily_data"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_foreign_futures_realtime",
+    "get_futures_daily_price",
+    "get_futures_history",
+    "get_futures_price_on_date",
+    "get_sge_daily_data"
+  ]
+}

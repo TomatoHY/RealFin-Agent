@@ -1,0 +1,101 @@
+{
+  "tool_name": "get_stock_map_by_market",
+  "tool_role": "R0b: Symbol / Code Resolution",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.MARKET",
+      "enum": [
+        "a",
+        "hk",
+        "us"
+      ],
+      "required": true
+    },
+    {
+      "field": "output_format",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.OUTPUT_FORMAT",
+      "enum": [
+        "dict",
+        "code_list"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "dict",
+      "semantic_type": "record",
+      "description": "A dictionary mapping stock names to stock codes."
+    },
+    {
+      "field": "code_list",
+      "semantic_type": "list",
+      "description": "A list of all stock codes."
+    },
+    {
+      "field": "error_message",
+      "semantic_type": "value",
+      "description": "A string describing the error reason."
+    }
+  ],
+  "produces": [
+    "stock_map",
+    "stock_codes"
+  ],
+  "consumes": [
+    "market_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally and returns error messages as strings."
+  },
+  "examples": {
+    "parameter_template": {
+      "market": "hk",
+      "output_format": "dict"
+    },
+    "return_shape_example": {
+      "dict": {
+        "腾讯控股": "0700.HK",
+        "汇丰控股": "0005.HK"
+      },
+      "code_list": [
+        "0700.HK",
+        "0005.HK"
+      ],
+      "error_message": "Invalid market code provided."
+    }
+  },
+  "description": "SELECT STOCK_UNIVERSE\nFROM A_SHARE\nWHERE MARKET = <a|hk|us>\n  AND FORMAT = <dict|code_list>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

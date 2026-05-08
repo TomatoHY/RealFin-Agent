@@ -1,9 +1,15 @@
 from typing import Callable, Dict
 from .tool_selectors import (
-    NecessaryToolSelector,
+    AllToolSelector,
+    BM25ToolSelector,
+    OracleToolSelector,
+    OracKToolSelector,
 )
 
 
 tool_selection_funcs: Dict[str, Callable] = {
-    "necessary": NecessaryToolSelector(),
+    "full": AllToolSelector(),
+    "bm25": BM25ToolSelector(),
+    "oracle": OracleToolSelector(),
+    "orac_k": OracKToolSelector()
 }

@@ -1,0 +1,138 @@
+{
+  "tool_name": "get_index_history",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "identifier",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.FIELD",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "required": true
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "enum": [
+        "a",
+        "hk",
+        "us",
+        "global"
+      ],
+      "required": true
+    },
+    {
+      "field": "original_query",
+      "semantic_type": "dsl_slot",
+      "description": "METADATA.ORIGINAL_QUERY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, e.g., 'akshare_history_api'."
+    },
+    {
+      "field": "identifier",
+      "semantic_type": "identifier",
+      "description": "The name of the index as identified by the API."
+    },
+    {
+      "field": "column",
+      "semantic_type": "option",
+      "description": "The column label for the returned value."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The historical value of the specified column."
+    },
+    {
+      "field": "date",
+      "semantic_type": "time_range",
+      "description": "The date for which the data was retrieved, in 'YYYY-MM-DD' format."
+    }
+  ],
+  "produces": [
+    "historical_index_data"
+  ],
+  "consumes": [
+    "index_identifier",
+    "date"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifier": "000001",
+      "column_label": "close",
+      "query_date": "2023-10-01",
+      "start_date": "2023-09-01",
+      "end_date": "2023-09-30",
+      "market": "A股",
+      "original_query": "get index history for 000001 on 2023-10-01"
+    },
+    "return_shape_example": {
+      "source": "akshare_history_api",
+      "identifier": "000001",
+      "column": "close",
+      "value": 15.23,
+      "date": "2023-10-01"
+    }
+  },
+  "description": "SELECT COUNT(TIMESERIES.PRICE.<open|high|low>)\nFROM INDEX\nWHERE IDENTIFY BY identifier\n  AND MARKET = <a|hk|us>\n  AND QUERY_DATE = <YYYY-MM-DD>\n  AND DATE BETWEEN start_date AND end_date",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "",
+    "analyze_index_performance",
+    "get_global_index_spot_value",
+    "get_index_realtime",
+    "get_indices_gain_ranking_dataframe",
+    "get_multiple_index_history_df"
+  ]
+}

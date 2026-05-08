@@ -1,0 +1,160 @@
+{
+  "tool_name": "calculate_price_change_pct",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "enum": [
+        "a",
+        "hk",
+        "us"
+      ],
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "PRICE.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    },
+    {
+      "field": "original_query",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.QUERY",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "analysis_type",
+      "semantic_type": "metadata",
+      "description": "The type of analysis performed. Always 'stock_change_percentage'."
+    },
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The identifier of the stock, either name or code."
+    },
+    {
+      "field": "market",
+      "semantic_type": "option",
+      "description": "The market type where the stock is listed."
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "time_range",
+      "description": "The date for which the query was made."
+    },
+    {
+      "field": "current_day",
+      "semantic_type": "record",
+      "description": "Details of the current day's closing price."
+    },
+    {
+      "field": "previous_day",
+      "semantic_type": "record",
+      "description": "Details of the previous trading day's closing price."
+    },
+    {
+      "field": "calculation_result",
+      "semantic_type": "record",
+      "description": "The result of the price change calculation."
+    }
+  ],
+  "produces": [
+    "stock_change_percentage"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "query_date": "2023-10-15",
+      "market": "us",
+      "adjust": "qfq",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "analysis_type": "stock_change_percentage",
+      "stock_identifier": "AAPL",
+      "market": "us",
+      "query_date": "2023-10-15",
+      "current_day": {
+        "date": "2023-10-15",
+        "close_price": "150.25"
+      },
+      "previous_day": {
+        "date": "2023-10-14",
+        "close_price": "148.50"
+      },
+      "calculation_result": {
+        "price_change": "1.75",
+        "percentage_change": "+1.18%"
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided date is not a trading day."
+      }
+    }
+  },
+  "description": "SELECT PRICE_CHANGE_PCT\nFROM A_SHARE\nWHERE DATE = <query_date>\n  AND MARKET = <a|hk|us>\n  AND ADJUST = <none|qfq|hfq>\n  AND IDENTIFY BY (CODE = <code> OR NAME = <name>)\n  AND COMPARE_WITH = PREVIOUS_TRADING_DAY",
+  "tool_alternative": [
+    "calculate_price_change_pct_in_period",
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_stocks_gain_ranking_dataframe"
+  ],
+  "tool_dependencies": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_stocks_gain_ranking_dataframe",
+    "search_kg"
+  ]
+}

@@ -2,7 +2,7 @@ import json
 import operator
 from typing import Annotated, Any, Dict, List, TypedDict, Union
 
-from langchain.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import messages_to_dict
 
 

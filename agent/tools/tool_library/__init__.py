@@ -1,42 +1,46 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+RealFin Tool Descriptor Package.
+
+This package contains 85 individual tool implementations, each in its own folder.
+Each tool folder contains:
+- code.py: Tool implementation
+- tool_desc.json: Tool metadata and description
+
+The utils module contains shared helper functions used across tools.
+"""
+
+import importlib
 import json
-import logging
-import os
-from importlib import import_module
-from pkgutil import iter_modules
-from typing import Any, Callable, Dict, List
-
-
-def read_tool_desc() -> Dict[str, Dict[str, Any]]:
-    """读取所有工具的描述"""
-    package_path = os.path.dirname(__file__)
+from pathlib import Path
+from typing import Dict, List
+ 
+from . import utils
+ 
+_TOOL_LIB_DIR = Path(__file__).parent
+ 
+ 
+def read_tool_desc() -> Dict[str, dict]:
+    """从tool_library目录加载所有工具的描述schema"""
     tool_desc = {}
-    for _, module_name, is_pkg in iter_modules([package_path]):
-        if is_pkg:
-            json_path = os.path.join(package_path, module_name, "tool_desc.json")
-            if os.path.exists(json_path):
-                try:
-                    with open(json_path, "r", encoding="utf-8") as f:
-                        tool_desc[module_name] = json.load(f)
-                except (json.JSONDecodeError, OSError) as e:
-                    logging.error(f"Could not read tool description for {module_name}: {type(e).__name}-{str(e)}.")
+    for tool_desc_file in _TOOL_LIB_DIR.glob("*/tool_desc.json"):
+        schema = json.load(open(tool_desc_file, encoding='utf-8'))
+        tool_name = schema.get("tool_name", tool_desc_file.parent.name)
+        tool_desc[tool_name] = schema
     return tool_desc
-
-
-def register_tools(tool_names: List[str]) -> Dict[str, Callable]:
-    """注册所有工具，得到 {tool_name: tool_func}"""
+ 
+ 
+def register_tools(tool_names: List[str]) -> Dict[str, callable]:
+    """按需懒加载工具执行函数"""
     tools = {}
-    tool_names = set(tool_names)
-    package_path = os.path.dirname(__file__)
-    for loader, module_name, is_pkg in iter_modules([package_path]):
-        if is_pkg and module_name in tool_names:
-            full_module_name = f"{__name__}.{module_name}"
-            try:
-                module = import_module(full_module_name)
-                func = getattr(module, module_name, None)
-                if func:
-                    tools[module_name] = func
-                else:
-                    raise NotImplementedError
-            except Exception as e:
-                logging.error(f"Could not import tool {module_name}: {type(e).__name}-{str(e)}.")
+    for tool_name in tool_names:
+        try:
+            module = importlib.import_module(f".{tool_name}.code", package=__package__)
+            if hasattr(module, tool_name):
+                tools[tool_name] = getattr(module, tool_name)
+        except ModuleNotFoundError:
+            pass
     return tools
+
+__all__ = ['utils', 'read_tool_desc', 'register_tools']

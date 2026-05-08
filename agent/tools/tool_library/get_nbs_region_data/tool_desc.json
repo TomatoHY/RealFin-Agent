@@ -1,0 +1,169 @@
+{
+  "tool_name": "get_nbs_region_data",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "kind",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.KIND",
+      "enum": [
+        "分省月度数据",
+        "分省季度数据",
+        "分省年度数据",
+        "主要城市月度价格",
+        "主要城市年度数据",
+        "港澳台月度数据",
+        "港澳台年度数据"
+      ],
+      "required": true
+    },
+    {
+      "field": "path",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: path | TYPE: IDENTIFIER.PATH | ENUM: null | REQUIRED: true\nMEANING: IDENTIFIER.PATH\n正例：使用“>”作为层级分隔并保持路径片段稳定一致，例如（分省季度数据场景）形如“国民经济核算>地区生产总值”这类带层级的category_path\n反例（错误做法）：路径缺少“>”层级分隔，或把不同口径片段混用/来回切换，例如“国民经济核算/地区生产总值”、只写“地区生产总值”（导致难以命中） | 补充：结构化要求为层级slot字符串，必须包含“>”分隔；同一任务内PATH片段保持完全一致（含空格/全半角），以避免命中不同口径表。",
+      "required": true
+    },
+    {
+      "field": "period",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: period | TYPE: TIME.RANGE | ENUM: null | REQUIRED: true\nMEANING: TIME.RANGE | 补充：当KIND=“分省季度数据”时，period应优先使用标准季度码以形成可检索的时间槽位（如2020Q1/2020Q2/2020Q3/2020Q4）；不得仅填“2020”并依赖target_time写“2020年第一季度”等中文来补偿。若为月度/年度数据则按对应口径填写（保持与target_time一致）。",
+      "required": true
+    },
+    {
+      "field": "region",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: region | TYPE: ENTITY.REGION | ENUM: null | REQUIRED: false\nMEANING: ENTITY.REGION\n正例：地区名称写法前后一致，例如始终用“浙江省”（不要在同一任务中来回切换）\n反例（错误做法）：同一任务中混用“浙江省”“浙江”（可能影响检索命中与列匹配） | 补充：region仅放“地区实体名”，不要填指标名/口径名；若同时提供region与indicator，需确保二者不互相替代（region!=indicator）。",
+      "required": false
+    },
+    {
+      "field": "indicator",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: indicator | TYPE: INDICATOR.ENTITY | ENUM: null | REQUIRED: false\nMEANING: INDICATOR.ENTITY | 补充：indicator用于填写“指标/统计主题/项目名”（如“地区生产总值”“地区生产总值指数”），不要误填“浙江省”等地区实体；与target_label严格区分：indicator不是结果列名。",
+      "required": false
+    },
+    {
+      "field": "target_label",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: target_label | TYPE: IDENTIFIER.TARGET_LABEL | ENUM: null | REQUIRED: true\nMEANING: IDENTIFIER.TARGET_LABEL\n正例：若表的度量/列标签是地区名或固定列名，应按表结构填写（本题常见做法是用地区作为列标签），例如 target_label=\"浙江省\"（用于读取该地区对应的同比增速列/度量）\n反例（错误做法）：把“同比增长”“同比增长率”“同比增长(%)”等口径字符串混作target_label，或出现 indicator=\"地区生产总值\" 同时 target_label=\"同比增长(%)\" 这类角色混淆组合（易与真实表结构不一致） | 补充：target_label应是“可直接作为METRIC匹配的列/度量标签”，季度GDP同比增速任务中常用为“地区列名=浙江省”来取该地区对应数值；不要把统计口径（同比/环比/指数基期等）当作target_label，口径应通过PATH/INDICATOR或表内真实字段来表达。",
+      "required": true
+    },
+    {
+      "field": "target_time",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: target_time | TYPE: TIME.RANGE | ENUM: null | REQUIRED: true\nMEANING: TIME.RANGE\n正例：季度查询时用标准季度时间码并与period匹配，例如 2020Q1/2020Q2/2020Q3/2020Q4；确定最大季度后，再调用M2工具按该季度起止月份取均值（如2020Q1对应2020-01~2020-03）\n反例（错误做法）：只做季度GDP查询但不再调用M2工具获取该季度内月度M2同比，或季度时间码写法不规范导致无法按季度定位 | 补充：target_time作为TIME过滤槽位需与period同粒度同编码（季度=YYYYQn），不要用“2020年第一季度”这类中文自然语言；若后续需要季度M2均值，请将季度码映射到月度起止（Q1=01~03，Q2=04~06，Q3=07~09，Q4=10~12）并据此调用M2工具取月度同比后求均值。",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "Source of the data."
+    },
+    {
+      "field": "kind",
+      "semantic_type": "metadata",
+      "description": "Type of data retrieved."
+    },
+    {
+      "field": "path",
+      "semantic_type": "metadata",
+      "description": "Data path used for retrieval."
+    },
+    {
+      "field": "query_params",
+      "semantic_type": "metadata",
+      "description": "Parameters used for the query."
+    },
+    {
+      "field": "result",
+      "semantic_type": "record",
+      "description": "The result of the query with row and column labels and value."
+    },
+    {
+      "field": "summary",
+      "semantic_type": "metadata",
+      "description": "Overview of the successful data query."
+    },
+    {
+      "field": "guidance",
+      "semantic_type": "metadata",
+      "description": "Guidance on retrieving specific values."
+    },
+    {
+      "field": "data_preview",
+      "semantic_type": "record",
+      "description": "Sample of available row and column labels."
+    },
+    {
+      "field": "error",
+      "semantic_type": "metadata",
+      "description": "Error message if the query fails."
+    }
+  ],
+  "produces": [
+    "regional economic data"
+  ],
+  "consumes": [
+    "query parameters"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "kind": "monthly",
+      "path": "China>Mainland>GDP",
+      "period": "2023-01",
+      "region": "Beijing",
+      "indicator": "GDP Growth Rate",
+      "target_label": "GDP",
+      "target_time": "2023-01"
+    },
+    "return_shape_example": {
+      "source": "National Bureau of Statistics",
+      "kind": "monthly",
+      "path": "China>Mainland>GDP",
+      "query_params": {
+        "region": "Beijing",
+        "indicator": "GDP Growth Rate",
+        "period": "2023-01"
+      },
+      "result": {
+        "row_label": "GDP",
+        "column_label_time": "2023-01",
+        "value": 5.67
+      },
+      "summary": "Successfully retrieved monthly GDP data for Beijing.",
+      "guidance": "Use 'GDP' as the target_label and '2023-01' as the target_time for specific value retrieval.",
+      "data_preview": {
+        "available_row_labels_sample": [
+          "GDP",
+          "CPI"
+        ],
+        "available_column_labels_sample": [
+          "2023-01",
+          "2023-02"
+        ]
+      },
+      "error": "No data available for the specified parameters."
+    }
+  },
+  "description": "SELECT REGIONAL_STATISTIC_VALUE\nFROM NBS\nWHERE KIND = <分省月度数据|分省季度数据|分省年度数据|主要城市月度价格|主要城市年度数据|港澳台月度数据|港澳台年度数据>\n  AND PATH = <category_path>\n  AND PERIOD = <period_code>\n  AND (REGION = <region> OR INDICATOR = <indicator>)\n  AND METRIC = <target_label>\n  AND TIME = <target_time>\n[CONSTRAINT]\n- 对季度同比/指数类查询：KIND通常选“分省季度数据”，并使用标准季度码（如2020Q1）在PERIOD与TIME中一致定位；不要用仅年份“2020”再用中文target_time补偿。\n- 字段职责边界：REGION=地区实体名（如“浙江省”）；INDICATOR=指标/统计主题（如“地区生产总值”）；METRIC/target_label=表的度量列/目标列标签（常见为地区列名如“浙江省”或表内固定列名），不要把“同比增长(%)”等口径词当作target_label。\n- PATH必须用“>”做层级分隔且片段稳定（如“国民经济核算>地区生产总值”），避免“/”或缺失层级。\n- 若任务需要“确定某季度后再算该季度M2（月度）均值”，本工具仅负责定位季度GDP相关数据；确定季度区间后应另调用M2工具（例如2020Q1 -> 2020-01~2020-03）获取月度同比并在季度内取平均。",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_china_macro_pro",
+    "get_china_population_nbs"
+  ]
+}

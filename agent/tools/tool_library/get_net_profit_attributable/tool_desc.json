@@ -1,0 +1,111 @@
+{
+  "tool_name": "get_net_profit_attributable",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The stock identifier, either the name or the code with prefix."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The reporting date for the financial data."
+    },
+    {
+      "field": "financial_statement",
+      "semantic_type": "metadata",
+      "description": "The type of financial statement, here it is 'Financial Abstract'."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "metadata",
+      "description": "The name of the financial item, here it is '归母净利润'."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The net profit attributable to the parent company in CNY."
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "The unit of the financial value, here it is '元'."
+    }
+  ],
+  "produces": [
+    "financial_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "financial_statement"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Returns empty on failure, uses try-except for error handling."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "2023-06-30",
+      "name": "平安银行",
+      "code": "000001"
+    },
+    "return_shape_example": {
+      "stock_identifier": "000001",
+      "report_date": "2023-06-30",
+      "financial_statement": "Financial Abstract",
+      "item_name": "归母净利润",
+      "value": 1500000000.0,
+      "unit": "元"
+    }
+  },
+  "description": "SELECT FINANCIAL_METRIC.NET_PROFIT_ATTRIBUTABLE_TO_PARENT\nFROM A_SHARE\nWHERE REPORT_DATE = <date>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

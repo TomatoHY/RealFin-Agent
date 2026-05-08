@@ -1,0 +1,109 @@
+{
+  "tool_name": "get_stock_comment",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "最新价",
+        "涨跌幅",
+        "换手率",
+        "市盈率",
+        "主力成本",
+        "机构参与度",
+        "综合得分",
+        "目前排名",
+        "关注指数"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The code of the stock."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The name of the stock."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is '千股千评 (Eastmoney)'."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested column's name and value."
+    }
+  ],
+  "produces": [
+    "stock_comment"
+  ],
+  "consumes": [
+    "stock_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "column_label": "closing_price",
+      "name": "Apple",
+      "code": "AAPL"
+    },
+    "return_shape_example": {
+      "stock_code": "AAPL",
+      "stock_name": "Apple",
+      "data_source": "千股千评 (Eastmoney)",
+      "requested_item": {
+        "name": "closing_price",
+        "value": 145.32
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT STOCK_COMMENT.TRADING_DAYS_COUNT\nFROM A_SHARE\nWHERE METRIC = <column_label>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_earnings_announcement",
+    "get_stock_consensus_forecast",
+    "get_stock_detailed_metric_forecast",
+    "search_kg"
+  ]
+}

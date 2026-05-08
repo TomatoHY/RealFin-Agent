@@ -1,0 +1,137 @@
+{
+  "tool_name": "get_balance_sheet",
+  "tool_role": "R3: Financial Statements / Structured Reports",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "enum": [
+        "资产-货币资金",
+        "资产-应收账款",
+        "资产-存货",
+        "资产-总资产",
+        "资产-总资产同比",
+        "负债-应付账款",
+        "负债-总负债",
+        "负债-预收账款",
+        "负债-总负债同比",
+        "资产负债率",
+        "股东权益合计"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The 6-digit stock code of the company."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The name of the stock."
+    },
+    {
+      "field": "report_date",
+      "semantic_type": "time_range",
+      "description": "The date of the financial report."
+    },
+    {
+      "field": "financial_statement",
+      "semantic_type": "metadata",
+      "description": "The type of financial statement. Always 'Balance Sheet'."
+    },
+    {
+      "field": "item_name",
+      "semantic_type": "entity",
+      "description": "The name of the financial item."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value of the financial item. Unit: CNY."
+    },
+    {
+      "field": "unit",
+      "semantic_type": "metadata",
+      "description": "The unit of the financial item value. Always '元'."
+    }
+  ],
+  "produces": [
+    "financial_report"
+  ],
+  "consumes": [
+    "company_identifier",
+    "financial_item"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "date": "2023-09-30",
+      "item_name": "Total Assets",
+      "name": null,
+      "code": "600519"
+    },
+    "return_shape_example": {
+      "stock_code": "600519",
+      "stock_name": "贵州茅台",
+      "report_date": "2023-09-30",
+      "financial_statement": "Balance Sheet",
+      "item_name": "Total Assets",
+      "value": 1200000000.0,
+      "unit": "元"
+    }
+  },
+  "description": "SELECT BALANCE_SHEET.ITEM.<资产-货币资金|资产-应收账款|资产-存货>\nFROM A_SHARE\nWHERE DATE = <date>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_map_by_exchange",
+    "search_kg"
+  ]
+}

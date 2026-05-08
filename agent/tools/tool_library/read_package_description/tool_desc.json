@@ -1,0 +1,32 @@
+{
+  "tool_name": "read_package_description",
+  "package_key": "pkg_doc_reader",
+  "description": "SELECT PACKAGE_DESCRIPTION\nFROM SYSTEM_METADATA\nWHERE SCOPE = current_package",
+  "arguments": {
+    "package_key": {
+      "type": "string",
+      "required": true
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "brief",
+        "full"
+      ],
+      "required": true
+    },
+    "max_tokens": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "returns": {
+    "package_key": "string",
+    "level": "string",
+    "content": "object",
+    "tokens_used": "integer"
+  },
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

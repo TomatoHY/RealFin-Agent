@@ -1,0 +1,96 @@
+{
+  "tool_name": "get_us_stock_map_by_exchange",
+  "tool_role": "R0b: Symbol / Code Resolution",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "exchange_name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.EXCHANGE",
+      "required": true
+    },
+    {
+      "field": "output_format",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.OUTPUT_FORMAT",
+      "enum": [
+        "dict",
+        "code_list"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_map",
+      "semantic_type": "record",
+      "description": "A dictionary mapping stock names to their symbols."
+    },
+    {
+      "field": "symbol_list",
+      "semantic_type": "list",
+      "description": "A list of all stock symbols."
+    },
+    {
+      "field": "error_message",
+      "semantic_type": "value",
+      "description": "An error message describing the failure."
+    }
+  ],
+  "produces": [
+    "stock_symbol_mapping"
+  ],
+  "consumes": [
+    "exchange_name"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "exchange_name": "NASDAQ",
+      "output_format": "dict"
+    },
+    "return_shape_example": {
+      "stock_map": {
+        "Apple": "AAPL",
+        "Tesla": "TSLA"
+      },
+      "symbol_list": [
+        "AAPL",
+        "TSLA"
+      ],
+      "error_message": "Invalid exchange name provided."
+    }
+  },
+  "description": "SELECT US_STOCK_SYMBOL_MAP\nFROM US_STOCK\nWHERE EXCHANGE = <exchange_name>\n  AND FORMAT = <dict|code_list>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_dividend_payout",
+    "get_balance_sheet",
+    "get_code_from_name",
+    "get_dividend_allotment_history",
+    "get_earnings_report_summary",
+    "get_financial_indicators",
+    "get_income_statement",
+    "get_net_profit_attributable",
+    "get_stock_basic_info",
+    "get_stock_long_short_term_investment",
+    "get_stock_map_by_market",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

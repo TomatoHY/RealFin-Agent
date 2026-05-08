@@ -1,0 +1,124 @@
+{
+  "tool_name": "get_stocks_gain_ranking_dataframe",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "comparison",
+  "input_semantics": [
+    {
+      "field": "codes",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODES",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "rank",
+      "semantic_type": "value",
+      "description": "Rank of the stock based on gain percentage."
+    },
+    {
+      "field": "code",
+      "semantic_type": "identifier",
+      "description": "Stock code."
+    },
+    {
+      "field": "name",
+      "semantic_type": "metadata",
+      "description": "Name of the stock."
+    },
+    {
+      "field": "gain_percentage",
+      "semantic_type": "value",
+      "description": "Gain percentage over the specified period."
+    }
+  ],
+  "produces": [
+    "ranked_stock_gains"
+  ],
+  "consumes": [
+    "stock_history_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Returns an empty array on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "codes": [
+        "000001",
+        "600519",
+        "0700.HK",
+        "AAPL"
+      ],
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31",
+      "adjust": ""
+    },
+    "return_shape_example": {
+      "rank": 1,
+      "code": "600519",
+      "name": "贵州茅台",
+      "gain_percentage": "+12.34%"
+    }
+  },
+  "description": "SELECT GAIN_RANKING\nFROM A_SHARE\nWHERE CODE IN <codes>\n  AND START_DATE = <start_date>\n  AND END_DATE = <end_date>\n  AND ADJUST = <\"\"|qfq|hfq>",
+  "tool_alternative": [
+    "calculate_price_change_pct_in_period",
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "calculate_price_change_pct"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "get_stocks_history_dataframe",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_a_stock_change_pct_in_period",
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

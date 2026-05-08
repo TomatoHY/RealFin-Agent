@@ -1,6 +1,6 @@
 import json
 
-from langchain.messages import HumanMessage
+from langchain_core.messages import HumanMessage
 
 from .base import BaseNode
 from ..prompts import TOOL_PROMPT
@@ -11,7 +11,7 @@ from ..utils import AgentState
 class ToolSelectorNode(BaseNode):
     def __init__(
         self,
-        strategy: ["necessary", ""] = "necessary",
+        strategy: ["necessary", "bm25", "base"] = "necessary",
     ):
         super().__init__("ToolSelector")
         self.strategy = strategy
@@ -38,7 +38,8 @@ class ToolSelectorNode(BaseNode):
         for tool_name, tool_info in tool_desc.items():
             formatted_tool_desc.append({
                 "function": tool_name,
-                "arguments": tool_info["input_semantics"],
+                "description": tool_info.get("description", ""),
+                "arguments": tool_info.get("input_semantics", []),
             })
         return formatted_tool_desc
 

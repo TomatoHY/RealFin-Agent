@@ -1,0 +1,101 @@
+{
+  "tool_name": "get_fx_spot_quote_value",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "forex"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "currency_pair",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CURRENCY_PAIR",
+      "required": true
+    },
+    {
+      "field": "metric_name",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.NAME",
+      "enum": [
+        "买报价",
+        "卖报价"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "query_type",
+      "semantic_type": "metadata",
+      "description": "Indicates whether the quote was obtained directly or through cross rate calculation."
+    },
+    {
+      "field": "currency_pair",
+      "semantic_type": "identifier",
+      "description": "The currency pair for which the quote is provided."
+    },
+    {
+      "field": "requested_metric",
+      "semantic_type": "record",
+      "description": "The requested metric and its value."
+    },
+    {
+      "field": "full_quote",
+      "semantic_type": "record",
+      "description": "Detailed quote information including bid, ask, high, low, open, and previous close prices."
+    }
+  ],
+  "produces": [
+    "forex_spot_quote"
+  ],
+  "consumes": [
+    "currency_pair",
+    "metric_name"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Returns empty on failure due to internal handling."
+  },
+  "examples": {
+    "parameter_template": {
+      "currency_pair": "USD/CNY",
+      "metric_name": "买报价"
+    },
+    "return_shape_example": {
+      "query_type": "direct",
+      "currency_pair": "USD/CNY",
+      "requested_metric": {
+        "name": "买报价",
+        "value": 6.45
+      },
+      "full_quote": {
+        "bid_price": 6.44,
+        "ask_price": 6.46,
+        "high_price": 6.5,
+        "low_price": 6.4,
+        "open_price": 6.42,
+        "previous_close": 6.43
+      }
+    }
+  },
+  "description": "SELECT SPOT_QUOTE.METRIC.<买报价|卖报价>\nFROM FOREX\nWHERE CURRENCY_PAIR = <currency_pair>",
+  "tool_alternative": [
+    "convert_currency_amount",
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "convert_currency_amount",
+    "get_currency_history_value",
+    "get_currency_rate_on_date",
+    "get_current_latest_value",
+    "get_monthly_avg_currency_rate",
+    "get_rmb_central_parity_rate_change"
+  ]
+}

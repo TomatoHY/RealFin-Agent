@@ -1,0 +1,47 @@
+{
+  "tool_name": "read_tool_description",
+  "package_key": "pkg_doc_reader",
+  "description": "SELECT TOOL_DESCRIPTION_CONTENT\nFROM SYSTEM_TOOLS\nWHERE OPERATION = <read|write|execute>",
+  "arguments": {
+    "tool_name": {
+      "type": "string",
+      "required": true
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "contract",
+        "schema",
+        "full"
+      ],
+      "required": true
+    },
+    "focus": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "inputs",
+          "date_format",
+          "returns",
+          "constraints",
+          "error_model"
+        ]
+      },
+      "required": false
+    },
+    "max_tokens": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "returns": {
+    "tool_name": "string",
+    "level": "string",
+    "content": "object",
+    "tokens_used": "integer"
+  },
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": []
+}

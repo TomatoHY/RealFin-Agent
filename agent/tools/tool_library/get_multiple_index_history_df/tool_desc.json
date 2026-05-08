@@ -1,0 +1,130 @@
+{
+  "tool_name": "get_multiple_index_history_df",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "identifiers",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.RETRIEVAL",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "columns_to_include",
+      "semantic_type": "dsl_slot",
+      "description": "METRIC.COLUMNS",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "value",
+      "description": "The date of the data entry."
+    },
+    {
+      "field": "identifier",
+      "semantic_type": "identifier",
+      "description": "The index identifier."
+    },
+    {
+      "field": "open",
+      "semantic_type": "value",
+      "description": "Opening price of the index."
+    },
+    {
+      "field": "high",
+      "semantic_type": "value",
+      "description": "Highest price of the index."
+    },
+    {
+      "field": "low",
+      "semantic_type": "value",
+      "description": "Lowest price of the index."
+    },
+    {
+      "field": "close",
+      "semantic_type": "value",
+      "description": "Closing price of the index."
+    },
+    {
+      "field": "volume",
+      "semantic_type": "value",
+      "description": "Trading volume of the index. Unit: 10k shares"
+    },
+    {
+      "field": "turnover",
+      "semantic_type": "value",
+      "description": "Turnover of the index. Unit: 10k CNY"
+    }
+  ],
+  "produces": [
+    "historical_index_data"
+  ],
+  "consumes": [
+    "index_identifiers",
+    "date_range"
+  ],
+  "error_model": {
+    "observability": "exception",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "The tool uses try-except blocks and raises exceptions on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifiers": [
+        "000001",
+        "600519",
+        "0700.HK",
+        "AAPL"
+      ],
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31",
+      "columns_to_include": [
+        "open",
+        "close",
+        "volume"
+      ]
+    },
+    "return_shape_example": {
+      "date": "2023-01-02",
+      "identifier": "000001",
+      "open": 15.3,
+      "high": 15.8,
+      "low": 15.2,
+      "close": 15.5,
+      "volume": 12000,
+      "turnover": 186000
+    }
+  },
+  "description": "SELECT TIMESERIES.INDEX.<columns_to_include>\nFROM INDEX\nWHERE IDENTIFY BY (CODE = <identifiers> OR NAME = <identifiers>)\n  AND DATE BETWEEN <start_date> AND <end_date>",
+  "tool_alternative": [
+    "get_stocks_history_dataframe"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_global_index_spot_value",
+    "get_index_history",
+    "get_index_realtime",
+    "get_stocks_history_dataframe"
+  ]
+}

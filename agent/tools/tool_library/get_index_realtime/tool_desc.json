@@ -1,0 +1,114 @@
+{
+  "tool_name": "get_index_realtime",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "identifier",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.FIELD",
+      "required": true
+    },
+    {
+      "field": "column_label",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
+      "enum": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "prev_close",
+        "change",
+        "pct_change",
+        "volume",
+        "amount",
+        "amplitude",
+        "time"
+      ],
+      "required": true
+    },
+    {
+      "field": "market",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.MARKET",
+      "enum": [
+        "a",
+        "hk",
+        "us",
+        "global"
+      ],
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, e.g., 'akshare_spot_api'."
+    },
+    {
+      "field": "identifier",
+      "semantic_type": "identifier",
+      "description": "The original name of the index."
+    },
+    {
+      "field": "column",
+      "semantic_type": "option",
+      "description": "The column label for which data was retrieved."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The value retrieved for the specified column."
+    },
+    {
+      "field": "datetime",
+      "semantic_type": "metadata",
+      "description": "The datetime when the data was retrieved, formatted as 'YYYY-MM-DD HH:MM:SS'."
+    }
+  ],
+  "produces": [
+    "index_data"
+  ],
+  "consumes": [
+    "index_identifier",
+    "column_label"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "exception",
+    "notes": "Handles exceptions with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifier": "000001",
+      "column_label": "close",
+      "market": "A股"
+    },
+    "return_shape_example": {
+      "source": "akshare_spot_api",
+      "identifier": "000001",
+      "column": "close",
+      "value": 15.32,
+      "datetime": "2023-10-05 14:30:00"
+    }
+  },
+  "description": "SELECT REALTIME.PRICE.<open|high|low>\nFROM INDEX\nWHERE IDENTIFY BY identifier\n  AND PRICE_FIELD = <open|high|low>\n  AND MARKET = <a|hk|us>",
+  "tool_alternative": [],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_index_change_pct",
+    "get_global_index_spot_value",
+    "get_index_history",
+    "get_multiple_index_history_df"
+  ]
+}

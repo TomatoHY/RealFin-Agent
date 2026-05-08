@@ -1,0 +1,94 @@
+{
+  "tool_name": "get_indices_gain_ranking_dataframe",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "index"
+  ],
+  "task_type": "comparison",
+  "input_semantics": [
+    {
+      "field": "identifiers",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COMPARISON",
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "rank",
+      "semantic_type": "value",
+      "description": "The rank of the index based on gain percentage."
+    },
+    {
+      "field": "identifier",
+      "semantic_type": "identifier",
+      "description": "The name or code of the index."
+    },
+    {
+      "field": "gain_percentage",
+      "semantic_type": "value",
+      "description": "The gain percentage of the index over the specified period."
+    }
+  ],
+  "produces": [
+    "index_gain_ranking"
+  ],
+  "consumes": [
+    "index_data"
+  ],
+  "error_model": {
+    "observability": "both",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "both",
+    "notes": "Raises exceptions and returns empty on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "identifiers": [
+        "000001",
+        "600519",
+        "0700.HK",
+        "AAPL"
+      ],
+      "start_date": "2023-01-01",
+      "end_date": "2023-12-31"
+    },
+    "return_shape_example": {
+      "rank": 1,
+      "identifier": "600519",
+      "gain_percentage": "+15.23%"
+    }
+  },
+  "description": "SELECT RANKING BY PERCENTAGE_GAIN\nFROM INDEX\nWHERE IDENTIFIERS = <index_identifiers>\n  AND START_DATE = <\"YYYY-MM-DD\">\n  AND END_DATE = <\"YYYY-MM-DD\">",
+  "tool_alternative": [
+    "",
+    "analyze_index_performance",
+    "calculate_index_change_pct"
+  ],
+  "tool_dependencies": [
+    "get_index_history"
+  ],
+  "tool_related": [
+    "",
+    "analyze_index_performance",
+    "calculate_index_change_pct",
+    "calculate_index_change_pct_in_period",
+    "get_index_history"
+  ]
+}

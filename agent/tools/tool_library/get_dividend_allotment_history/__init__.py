@@ -1,0 +1,1 @@
+from .code import get_dividend_allotment_history

@@ -10,4 +10,5 @@ class AgentConfig(BaseModel):
     max_tool_call: int = 10
     max_iters: int = 10
     tool_filter_strategy: str = "necessary"
+    location: str = "realfin"
     tool_timeout: int = 600

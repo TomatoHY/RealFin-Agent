@@ -1,28 +1,14 @@
-import json
-import os
-import pickle
-import re
-import time
-import traceback
-import unicodedata
-import unittest
-
-import akshare as ak
-import numpy as np
 import pandas as pd
-import requests
 
-from datetime import datetime, timedelta, date
-from functools import lru_cache
-from io import StringIO
-from typing import Optional, Any, Dict, Callable, Tuple, Union, List, Literal
+from datetime import datetime
+from typing import Optional, Any, Dict
 
 from ..get_code_from_name import get_code_from_name
 from ..utils import _fetch_a_history_hybrid, _log_debug
 
 
 def get_last_n_trading_days(
-code: Optional[str] = None,
+    code: Optional[str] = None,
     name: Optional[str] = None,
     n: int = 3,
     adjust: str = "",
@@ -167,7 +153,7 @@ code: Optional[str] = None,
                     f"错误: 'select_index'={select_index} 超出范围。"
                     f"当前可用范围是 [0, {len(trading_days) - 1}]。"
                 )
-            selected = trading_days[select_index - 1]
+            selected = trading_days[select_index]
             return {
                 "selected": {
                     "index": select_index,

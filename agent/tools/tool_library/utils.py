@@ -1,15 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Utility functions and helpers for RealFin tools.
+
+This module contains all helper functions extracted from tool_library.py
+that are used by the 85 main tool functions.
+"""
+
+# ============================================================================
+# IMPORTS
+# ============================================================================
 import akshare as ak
 import pandas as pd
+import numpy as np
 import time, re, requests, os, json
+from io import StringIO
+import unicodedata
+import unittest
+import traceback
 import pickle
 
-from datetime import datetime, date
 from functools import lru_cache
-from typing import Optional, Any, Dict, Tuple, Union, List, Literal
+from datetime import datetime, timedelta, date
+from typing import Optional, Any, Dict, Callable, Tuple, Union, List, Literal
 
-from ...utils import get_api_settings
-
-CURRENCY_API_KEY = get_api_settings().CURRENCY_API_KEY
+# ============================================================================
+# GLOBAL VARIABLES AND CONSTANTS
+# ============================================================================
+CURRENCY_API_KEY = os.getenv("CURRENCY_API_KEY", "YOUR_CURRENCY_API_KEY")
 
 _VERBOSE_LOGGING = os.getenv("TOOL_LIBRARY_VERBOSE", "").lower() in ("1", "true", "yes")
 

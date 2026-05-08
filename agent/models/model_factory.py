@@ -8,38 +8,55 @@ from ..utils import get_api_settings
 
 
 MODEL_REGISTRY = {
+    # OpenAI 系列
+    "gpt-5.1": {
+        "class": ChatOpenAI,
+        "real_name": "gpt-5.1"
+    },
+    "gpt-5.2": {
+        "class": ChatOpenAI,
+        "real_name": "gpt-5.2"
+    },
+    # Anthropic/Claude 系列
     "claude-haiku-4.5": {
         "class": ChatOpenAI,
-        "real_name": "anthropic/claude-haiku-4.5"
+        "real_name": "claude-haiku-4-5-20251001"
     },
     "claude-sonnet-4.5": {
         "class": ChatOpenAI,
-        "real_name": "anthropic/claude-sonnet-4.5"
+        "real_name": "claude-sonnet-4-5-20250929"
     },
+    "claude-opus-4.5": {
+        "class": ChatOpenAI,
+        "real_name": "claude-opus-4-5-20251101"
+    },
+    "claude-sonnet-4.6": {
+        "class": ChatOpenAI,
+        "real_name": "claude-sonnet-4-6"
+    },
+    "claude-opus-4.6": {
+        "class": ChatOpenAI,
+        "real_name": "claude-opus-4-6"
+    },
+    # DeepSeek 系列
     "deepseek-v3.2": {
         "class": ChatOpenAI,
-        "real_name": "deepseek/deepseek-v3.2"
+        "real_name": "deepseek-v3.2"
     },
-    "gpt-5-chat": {
-        "class": ChatOpenAI,
-        "real_name": "openai/gpt-5-chat"
-    },
-    "gpt-5.1": {
-        "class": ChatOpenAI,
-        "real_name": "openai/gpt-5.1"
-    },
-    "gemini-3-pro-preview": {
-        "class": ChatOpenAI,
-        "real_name": "google/gemini-3-pro-preview"
-    },
+    # Kimi 系列
     "kimi-k2": {
         "class": ChatOpenAI,
         "real_name": "Kimi-K2"
-    }
+    },
+    # Qwen via RealFin
+    "qwen3-max": {
+        "class": ChatOpenAI,
+        "real_name": "qwen/qwen3-max"
+    },
 }
 
 
-def create_chat_model(model_name: str, **kwargs) -> BaseChatModel:
+def create_chat_model(model_name: str, location: str = "realfin", **kwargs) -> BaseChatModel:
     model_name = model_name.lower()
     if model_name not in MODEL_REGISTRY:
         raise ValueError(f"Unknown model name: {model_name}. "
@@ -50,10 +67,16 @@ def create_chat_model(model_name: str, **kwargs) -> BaseChatModel:
     settings = get_api_settings()
 
     if model_class == ChatOpenAI:
+        if location == "realfin":
+            api_key = settings.REALFIN_API_KEY
+            api_base = settings.REALFIN_API_BASE
+        else:
+            api_key = settings.OPENAI_API_KEY
+            api_base = settings.OPENAI_API_BASE
         return ChatOpenAI(
             model=real_name,
-            openai_api_key=settings.OPENAI_API_KEY,
-            openai_api_base=settings.OPENAI_API_BASE,
+            openai_api_key=api_key,
+            openai_api_base=api_base,
             **kwargs
         )
     # elif model_class == ChatAnthropic:

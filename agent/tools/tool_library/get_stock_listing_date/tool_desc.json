@@ -1,0 +1,69 @@
+{
+  "tool_name": "get_stock_listing_date",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: name | TYPE: STRING | ENUM: null | REQUIRED: false\nMEANING: IDENTIFIER.NAME | 补充：当任务为“比较/最早/最晚/最小值”时，name 仅作为定位条件之一；必须先对齐全部候选实体名称集合，并为每个候选补齐并查询到可比较的 LISTING_DATE（缺失则继续补查或声明无法比较），不得在只拿到部分候选结果时直接下结论。",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: code | TYPE: STRING | ENUM: null | REQUIRED: false\nMEANING: IDENTIFIER.CODE | 补充：用于精确定位 A 股标的，比较上市时间/最早最晚时优先使用 code 以确保同口径取数；必须对齐全部候选并对每个候选查询到 LISTING_DATE 后，显式执行比较（如取 MIN/MAX）再回答；任一候选 code/日期缺失需先补查，否则不得凭常识推断。 | 注意：涉及上市日期比较必填优先用code",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "returns",
+      "semantic_type": "value",
+      "description": "股票的上市日期(格式 'YYYY-MM-DD'), 或者一个描述性的错误信息字符串。"
+    }
+  ],
+  "produces": [
+    "stock_listing_date"
+  ],
+  "consumes": [
+    "stock_name",
+    "stock_code"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors using try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "name": "平安银行",
+      "code": "000001"
+    },
+    "return_shape_example": {
+      "returns": "1991-04-03"
+    }
+  },
+  "description": "SELECT LISTING_DATE\nFROM A_SHARE\nWHERE IDENTIFY BY (CODE = <code> OR NAME = <name>)\n[CONSTRAINT]\n- For compare/earliest/latest/min/max questions: first align the full candidate set (e.g., all “三大航” members), then obtain LISTING_DATE for every candidate using the same comparable field (prefer CODE if available), and only answer after an explicit comparison (e.g., MIN(LISTING_DATE)).\n- If any candidate’s LISTING_DATE is missing/unretrieved, you MUST query/补查 that candidate (via CODE/NAME) or state “无法比较/信息不足”; never guess from partial results or common knowledge.\n- Use LISTING_DATE as the authoritative comparable value for listing-time comparisons; do not mix heterogeneous proxies unless explicitly required and normalized.",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_hk_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_individual_basic_info_xq_value",
+    "get_top_10_shareholders",
+    "search_kg"
+  ]
+}

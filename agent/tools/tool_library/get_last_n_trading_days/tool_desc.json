@@ -8,26 +8,26 @@
   "input_semantics": [
     {
       "field": "code",
-      "semantic_type": "identifier",
-      "description": "股票代码，必须包含交易所前缀，例如 'sh600519' 或 'sz000001'。如果提供代码，则无需提供名称。",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
       "required": false
     },
     {
       "field": "name",
-      "semantic_type": "identifier",
-      "description": "股票的中文名称，例如 '贵州茅台'。'code' 和 'name' 至少需要提供一个。",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
       "required": false
     },
     {
       "field": "n",
-      "semantic_type": "threshold",
-      "description": "要返回的最近交易日的数量。默认为 3。",
+      "semantic_type": "dsl_slot",
+      "description": "SLOT: n | TYPE: integer | REQUIRED: true\nMEANING: 返回最近 n 个已完成交易日（不含今日当前未收盘数据），按从新到旧排列。\n【核心索引规则】\n- trading_days[0] = 最近已完成交易日（昨日或上一交易日）\n- trading_days[n-1] = trading_days[-1] = n 个交易日之前\n- 因此：查询\"N 个交易日之前\" → 设 n=N，取 trading_days[-1] 或 select_index=N-1\n- 注意：不要设 n=N+1，n=N 已经足够。错误示例：查\"7个交易日之前\"时设 n=8 是错误的\n- 查\"上一个交易日\"：n=1 即可，取 trading_days[0]（即 trading_days[-1]）\n禁用条件：仅需查询最新/今日价格时，使用 get_a_stock_daily_price(query_date='latest')",
       "required": true
     },
     {
       "field": "adjust",
-      "semantic_type": "option",
-      "description": "复权类型。'' 代表不复权, 'qfq' 代表前复权, 'hfq' 代表后复权。",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
       "enum": [
         "",
         "qfq",
@@ -37,8 +37,8 @@
     },
     {
       "field": "column_label",
-      "semantic_type": "option",
-      "description": "要查询的数据列名称。支持的列名: open, close, high, low, volume, amount 或对应的中文名称（开盘、收盘、最高、最低、成交量、成交额）。",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.COLUMN_LABEL",
       "enum": [
         "open",
         "close",
@@ -54,13 +54,18 @@
         "成交额"
       ],
       "required": true
+    },
+    {
+      "field": "select_index",
+      "semantic_type": "dsl_slot",
+      "description": "[可选] 直接返回第 select_index 条记录（0-based，0=最近交易日）。\n查询\"N个交易日之前\"时设 select_index=N-1，工具返回 selected.value 而非完整列表。\n示例：7个交易日之前 → n=7, select_index=6 → 直接得到 selected.value"
     }
   ],
   "output_semantics": [
     {
       "field": "trading_days",
       "semantic_type": "list",
-      "description": "最近 n 个交易日的列表，每个交易日包含日期和对应的列值。按日期从新到旧排序（trading_days[0] 是最新交易日；trading_days[-1] 是这 n 个中最早的交易日）。若问题包含“\"N个交易日之前\"”：推荐调用本工具时令 n = N + 1，然后最靠前的日期对应的数值作为答案。"
+      "description": "最近 n 个交易日的列表，每个交易日包含日期和对应的列值。按日期从新到旧排序（trading_days[0] 是最新交易日；trading_days[n-1] 是这 n 个中最早的交易日）。\n\nIndexing Rule（重要）：\n- 若问题为\"前 1 个交易日 / 上一个交易日\"：取 trading_days[1]（调用时 n=2, select_index=1）。\n- 若问题为\"前 N 个交易日 / N 个交易日之前\"：取 trading_days[N-1]（调用时 n=N, select_index=N-1）。例如\"7个交易日之前\"应调用 n=7, select_index=6。\n- 禁止在此语义下选择错误的索引元素。"
     },
     {
       "field": "stock_identifier",
@@ -71,6 +76,11 @@
       "field": "error",
       "semantic_type": "metadata",
       "description": "如果发生错误，此字段包含错误信息。"
+    },
+    {
+      "field": "selected",
+      "semantic_type": "object",
+      "description": "[仅当提供 select_index 时返回] 被选中的单个交易日结果，包含 index、date 和 value。"
     }
   ],
   "produces": [
@@ -116,11 +126,25 @@
       "stock_identifier": "sh600519"
     }
   },
-  "lite_desc": "获取指定A股最近 n 个交易日的日期及对应的指定列值（如收盘价）",
-  "tool_alternative": [],
+  "description": "SELECT TIMESERIES.PRICE.<open|close|high|low|volume|amount>\nFROM A_SHARE\nWHERE LAST <n> TRADING_DAYS\n  AND ADJUST = <none|qfq|hfq>\n  AND (IDENTIFY BY CODE = <code> OR IDENTIFY BY NAME = <name>)\n  [AND SELECT_INDEX = <index>]\n[CONSTRAINT] n=1 返回最新交易日（当前或最近有数据的交易日），若需查询\"上一个交易日\"应设置 n=2 并取第二条记录\n触发条件：需要获取多个连续交易日的历史价格序列、进行时间序列分析、计算趋势或波动时使用\n禁用条件：仅需查询单个交易日（如最新交易日、特定日期）的价格数据时，应使用 get_a_stock_daily_price 而非本工具；查询\"最新价格\"\"当前价格\"\"今日价格\"等单点数据时禁用本工具",
+  "tool_alternative": [
+    "get_a_stock_daily_price",
+    "get_stock_hist_price_data_tx"
+  ],
   "tool_dependencies": [
     "get_code_from_name",
     "search_kg"
   ],
-  "description": "【分类路径: 个体实体 > 股票 > 价格/行情】获取指定A股最近 n 个交易日的日期及对应的指定列值（例如收盘价、开盘价、最高价等）。返回的 trading_days 列表按日期从新到旧排序（第 1 个元素是最新交易日）。若问题包含“\"N个交易日之前\"”：按评测语义应理解为【最新交易日不计入】往前数 N 个交易日的那一天的值；推荐调用本工具时令 n = N + 1，然后取 trading_days[-1].value 作为答案（不要在列表中凭感觉挑某一项，也不要把它当作最近 N 个交易日窗口内的最大/最小值）。"
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
 }

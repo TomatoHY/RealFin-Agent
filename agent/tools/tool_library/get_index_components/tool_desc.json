@@ -1,0 +1,90 @@
+{
+  "tool_name": "get_index_components",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "index"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    },
+    {
+      "field": "include_weights",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.INCLUDE_WEIGHTS",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "成分券代码"
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "成分券名称"
+    },
+    {
+      "field": "weight",
+      "semantic_type": "value",
+      "description": "权重。Unit: percentage"
+    }
+  ],
+  "produces": [
+    "index_components"
+  ],
+  "consumes": [
+    "index_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally, returns empty or error message on failure."
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "000300",
+      "include_weights": true
+    },
+    "return_shape_example": [
+      {
+        "stock_code": "000001",
+        "stock_name": "平安银行",
+        "weight": "5.23%"
+      },
+      {
+        "stock_code": "600519",
+        "stock_name": "贵州茅台",
+        "weight": "8.45%"
+      }
+    ]
+  },
+  "description": "SELECT INDEX.COMPONENTS.<stock_code, weight>\nFROM INDEX\nWHERE IDENTIFY BY CODE = <index_code>\n  AND INCLUDE_WEIGHTS = <include_weights_flag>",
+  "tool_alternative": [],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

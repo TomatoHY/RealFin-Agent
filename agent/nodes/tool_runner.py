@@ -2,7 +2,7 @@ import json
 import re
 from typing import Callable, Dict, List
 
-from langchain.messages import HumanMessage
+from langchain_core.messages import HumanMessage
 
 from .base import BaseNode
 from ..prompts import TOOL_RESULTS_PROMPT
@@ -40,13 +40,17 @@ class ToolRunnerNode(BaseNode):
 
     def run(self, state: AgentState):
         tool_calls = self._extract_tool_calls(state["messages"][-1].content)
-        self._register_tools([tool_call["function"] for tool_call in tool_calls])
         tool_results = {}
         if tool_calls is None:
             tool_results = {"Error": "Invalid tool call format."}
         else:
+            self._register_tools([tool_call.get("function") or tool_call.get("name") for tool_call in tool_calls])
             for tool_call in tool_calls:
-                tool_name = tool_call["function"]
+                tool_name = tool_call.get("function") or tool_call.get("name")
+                if "arguments" not in tool_call:
+                    self.logger.warning(f"Tool call missing 'arguments' key: {tool_call}")
+                    tool_results[str(tool_name)] = "Error: malformed tool call, 'arguments' key missing."
+                    continue
                 tool_args = tool_call["arguments"]
                 if tool_name not in self.tool_funcs:
                     tool_results[tool_name] = f"Error: tool `{tool_name}` not found."
@@ -55,7 +59,9 @@ class ToolRunnerNode(BaseNode):
                     tool_result = self.tool_funcs[tool_name](**tool_args)
                 except Exception as e:
                     tool_result = f"{type(e).__name__}: {str(e)}"
-                function_call_str = f"{tool_name}({', '.join(f'{k}={v if not isinstance(v, str) else f"\'{v}\'"}' for k, v in tool_args.items())})"
+                def _fmt(k, v):
+                    return f"{k}='{v}'" if isinstance(v, str) else f"{k}={v}"
+                function_call_str = f"{tool_name}({', '.join(_fmt(k, v) for k, v in tool_args.items())})"
                 self.logger.debug(f"Tool call: {function_call_str} = {tool_result}")
                 tool_results[function_call_str] = str(tool_result)
 

@@ -1,0 +1,119 @@
+{
+  "tool_name": "get_hk_stock_basic_info",
+  "tool_role": "R1: Static Metadata / Identity Info",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "item_name",
+      "semantic_type": "dsl_slot",
+      "description": "ENTITY.ITEM_NAME",
+      "enum": [
+        "comunic",
+        "comcnname",
+        "comenname",
+        "incdate",
+        "rgiofc",
+        "hofclctmbu",
+        "chairman",
+        "mbu",
+        "comintr",
+        "refccomty",
+        "numtissh",
+        "ispr",
+        "nrfd",
+        "nation_name",
+        "tel",
+        "fax",
+        "email",
+        "web_site",
+        "lsdateipo",
+        "mainholder"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_code",
+      "semantic_type": "identifier",
+      "description": "The stock code retrieved from the data."
+    },
+    {
+      "field": "stock_name",
+      "semantic_type": "entity",
+      "description": "The stock name retrieved from the data."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data."
+    },
+    {
+      "field": "requested_item",
+      "semantic_type": "record",
+      "description": "The requested item and its value."
+    }
+  ],
+  "produces": [
+    "stock_basic_info"
+  ],
+  "consumes": [
+    "stock_identifier"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "Returns empty on failure, uses try-except."
+  },
+  "examples": {
+    "parameter_template": {
+      "item_name": "stock_basic_info",
+      "name": null,
+      "code": "0700.HK"
+    },
+    "return_shape_example": {
+      "stock_code": "0700.HK",
+      "stock_name": "腾讯控股",
+      "data_source": "HKEX",
+      "requested_item": {
+        "name": "stock_basic_info",
+        "value": "Tencent Holdings Ltd"
+      }
+    }
+  },
+  "description": "SELECT COMPANY_PROFILE.<comunic|comcnname|comenname|incdate|rgiofc|hofclctmbu|chairman|mbu|comintr|refccomty|numtissh|ispr|nrfd|nation_name|tel|fax|email|web_site|lsdateipo|mainholder>\nFROM HK_STOCK\nWHERE IDENTIFY BY (CODE = <hk_stock_code> OR NAME = <stock_name>)",
+  "tool_alternative": [
+    "get_stock_basic_info"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_code_from_name",
+    "get_stock_basic_info",
+    "get_stock_basic_info_a",
+    "get_stock_individual_basic_info_xq_value",
+    "get_stock_listing_date",
+    "get_top_10_shareholders",
+    "search_kg"
+  ]
+}

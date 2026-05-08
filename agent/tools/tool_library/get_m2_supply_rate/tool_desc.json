@@ -1,0 +1,84 @@
+{
+  "tool_name": "get_m2_supply_rate",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "economy",
+    "macro"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START\n触发条件：当需要对某一季度内的M2同比（月度）做区间取数（例如求该季度M2同比平均值）时，start_date必须设置为该季度的起始月份（按月时间点）。\n禁用条件：禁止将start_date填写为季度字符串（如“2020Q1”）或非TIME可解析的路径/指标名；禁止将start_date设置在end_date之后。\n边界规则：季度到月份映射需完整覆盖：Q1=1月，Q2=4月，Q3=7月，Q4=10月；当题目给定具体年份季度（如2020Q1）时，start_date取该年该季度首月（例如2020-01）；若仅给区间则取区间下界对应的首月，确保TIME >= start_date能够包含季度首月数据。 | 注意：季度用YYYY-MM首月",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END\n触发条件：当需要对某一季度内的M2同比（月度）做区间取数（例如求该季度M2同比平均值）时，end_date必须设置为该季度的结束月份（按月时间点），用于截取该季度内所有月份后求平均。\n禁用条件：禁止将end_date填写为季度字符串（如“2020Q1”）或非TIME可解析的路径/指标名；禁止将end_date设置在start_date之前。\n边界规则：季度到月份映射需完整覆盖：Q1=3月，Q2=6月，Q3=9月，Q4=12月；当题目给定具体年份季度（如2020Q1）时，end_date取该年该季度末月（例如2020-03）；区间为闭区间（TIME <= end_date），应确保包含季度末月数据后再计算月度同比的算术平均值（单位%）。 | 注意：季度用YYYY-MM末月",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "date",
+      "semantic_type": "value",
+      "description": "The month for which the M2 supply rate is reported, formatted as 'YYYY-MM'."
+    },
+    {
+      "field": "value",
+      "semantic_type": "value",
+      "description": "The M2 supply rate as a percentage string (e.g., '9.97%')."
+    }
+  ],
+  "produces": [
+    "M2 supply rate data"
+  ],
+  "consumes": [
+    "time range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks to handle errors gracefully."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2023-01",
+      "end_date": "2023-09"
+    },
+    "return_shape_example": {
+      "date": "2023-09",
+      "value": "8.45%",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The start_date must be earlier than the end_date."
+      }
+    }
+  },
+  "description": "SELECT M2_SUPPLY_YOY_MONTHLY\nFROM NBS\nWHERE TIME >= start_date AND TIME <= end_date\n触发：当问题需要计算某一季度内“中国M2同比（月度年率）”的平均值/均值（单位%）时，必须调用本工具，按该季度覆盖的月份区间取数后再做平均。\n禁用：当问题仅要求季度GDP同比增速最大季度的判定（省级季度数据）或不涉及M2同比/不涉及按时间区间聚合时，不要调用本工具；也不要用本工具替代分省季度GDP同比增速的查询。",
+  "tool_alternative": [
+    "calculate_m2_supply_rate_change",
+    "get_m2_supply_rate_on_date"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "calculate_gold_forex_change",
+    "calculate_lpr_rate_change",
+    "calculate_m2_supply_rate_change",
+    "get_china_macro_pro",
+    "get_forex_price_on_date",
+    "get_gold_forex_reserves",
+    "get_gold_forex_reserves_on_date",
+    "get_lpr_rate",
+    "get_lpr_rate_on_date",
+    "get_m2_supply_rate_on_date",
+    "get_ppi_rate_on_date",
+    "get_ppi_yearly_by_quarters"
+  ]
+}

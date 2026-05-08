@@ -1,0 +1,152 @@
+{
+  "tool_name": "get_sw_index_third_cons",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "symbol",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.SYMBOL",
+      "required": true
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "序号",
+      "semantic_type": "value",
+      "description": "Serial number"
+    },
+    {
+      "field": "股票代码",
+      "semantic_type": "identifier",
+      "description": "Stock code"
+    },
+    {
+      "field": "股票简称",
+      "semantic_type": "value",
+      "description": "Stock abbreviation"
+    },
+    {
+      "field": "纳入时间",
+      "semantic_type": "time_range",
+      "description": "Inclusion date"
+    },
+    {
+      "field": "申万1级",
+      "semantic_type": "value",
+      "description": "Shenwan Level 1 classification"
+    },
+    {
+      "field": "申万2级",
+      "semantic_type": "value",
+      "description": "Shenwan Level 2 classification"
+    },
+    {
+      "field": "申万3级",
+      "semantic_type": "value",
+      "description": "Shenwan Level 3 classification"
+    },
+    {
+      "field": "价格",
+      "semantic_type": "value",
+      "description": "Price"
+    },
+    {
+      "field": "市盈率",
+      "semantic_type": "value",
+      "description": "Price-to-earnings ratio"
+    },
+    {
+      "field": "市盈率ttm",
+      "semantic_type": "value",
+      "description": "Price-to-earnings ratio TTM"
+    },
+    {
+      "field": "市净率",
+      "semantic_type": "value",
+      "description": "Price-to-book ratio"
+    },
+    {
+      "field": "股息率",
+      "semantic_type": "value",
+      "description": "Dividend yield. Unit: percentage"
+    },
+    {
+      "field": "市值",
+      "semantic_type": "value",
+      "description": "Market value. Unit: 100 million CNY"
+    },
+    {
+      "field": "归母净利润同比增长(09-30)",
+      "semantic_type": "value",
+      "description": "Net profit attributable to parent company YoY growth as of September 30. Unit: percentage"
+    },
+    {
+      "field": "归母净利润同比增长(06-30)",
+      "semantic_type": "value",
+      "description": "Net profit attributable to parent company YoY growth as of June 30. Unit: percentage"
+    },
+    {
+      "field": "营业收入同比增长(09-30)",
+      "semantic_type": "value",
+      "description": "Operating income YoY growth as of September 30. Unit: percentage"
+    },
+    {
+      "field": "营业收入同比增长(06-30)",
+      "semantic_type": "value",
+      "description": "Operating income YoY growth as of June 30. Unit: percentage"
+    }
+  ],
+  "produces": [
+    "industry constituent stocks data"
+  ],
+  "consumes": [
+    "industry code"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except"
+  },
+  "examples": {
+    "parameter_template": {
+      "symbol": "801010.SI"
+    },
+    "return_shape_example": {
+      "序号": 1,
+      "股票代码": "000001",
+      "股票简称": "平安银行",
+      "纳入时间": "2022-01-15",
+      "申万1级": "金融",
+      "申万2级": "银行",
+      "申万3级": "商业银行",
+      "价格": 15.23,
+      "市盈率": 8.56,
+      "市盈率ttm": 9.12,
+      "市净率": 1.23,
+      "股息率": "3.45%",
+      "市值": 3500.45,
+      "归母净利润同比增长(09-30)": "+5.86%",
+      "归母净利润同比增长(06-30)": "+4.32%",
+      "营业收入同比增长(09-30)": "+6.78%",
+      "营业收入同比增长(06-30)": "+5.67%"
+    }
+  },
+  "description": "SELECT CONSTITUENT_STOCK_DETAILS\nFROM A_SHARE\nWHERE SHENWAN_L3_INDUSTRY.SYMBOL = <sw_level3_industry_symbol>",
+  "tool_alternative": [
+    "get_sw_index_third_info"
+  ],
+  "tool_dependencies": [
+    "get_sw_index_third_info"
+  ],
+  "tool_related": [
+    "get_sw_index_third_info"
+  ]
+}

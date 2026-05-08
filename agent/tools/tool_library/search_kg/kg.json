@@ -1,0 +1,438 @@
+[
+  {
+    "id": "GRP_CN_002",
+    "aliases": [
+      "BAT",
+      "中国互联网三巨头",
+      "百度阿里腾讯"
+    ],
+    "description": "中国互联网时代的初代三巨头，代表了搜索、电商和社交/游戏的绝对统治地位。",
+    "source": "Industry Standard",
+    "region": "China",
+    "count": 3,
+    "members": [
+      "Baidu, Inc.",
+      "Alibaba Group Holding Ltd.",
+      "腾讯控股"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_003",
+    "aliases": [
+      "China Big Four Banks",
+      "中国四大行",
+      "中国四大银行",
+      "四大国有银行"
+    ],
+    "description": "由中国中央政府控股的四家最大的商业银行，是全球资产规模最大的银行群体。",
+    "source": "PBOC / Industry Standard",
+    "region": "China",
+    "count": 4,
+    "members": [
+      "工商银行",
+      "建设银行",
+      "农业银行",
+      "中国银行"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_004",
+    "aliases": [
+      "Wei Xia Li",
+      "蔚小理",
+      "造车新势力三剑客"
+    ],
+    "description": "中国新能源汽车（EV）领域最具代表性的三家初创上市公司。",
+    "source": "Chinese Media / Industry Standard",
+    "region": "China",
+    "count": 3,
+    "members": [
+      "NIO, Inc.",
+      "XPeng, Inc.",
+      "Li Auto, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_005",
+    "aliases": [
+      "China Telecom Big Three",
+      "三大运营商"
+    ],
+    "description": "垄断中国通信基础设施建设与运营的三家大型央企。",
+    "source": "MIIT / Industry Standard",
+    "region": "China",
+    "count": 3,
+    "members": [
+      "中国移动",
+      "中国电信",
+      "中国联通"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_004",
+    "aliases": [
+      "US Big Four Banks",
+      "美国四大行"
+    ],
+    "description": "美国资产规模最大、且被视为'大而不倒'（Too Big to Fail）的四家全能型银行。",
+    "source": "Federal Reserve / Industry Standard",
+    "region": "United States",
+    "count": 4,
+    "members": [
+      "JPMorgan Chase & Co.",
+      "Bank of America Corp.",
+      "Citigroup, Inc.",
+      "Wells Fargo & Co."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_005",
+    "aliases": [
+      "Detroit Three",
+      "Big Three Auto",
+      "底特律三巨头"
+    ],
+    "description": "位于美国底特律地区的传统三大汽车制造商（其中Chrysler现属于Stellantis）。",
+    "source": "Industry Standard",
+    "region": "United States",
+    "count": 3,
+    "members": [
+      "General Motors Co.",
+      "Ford Motor Co.",
+      "Stellantis NV"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_006",
+    "aliases": [
+      "US Big Four Airlines",
+      "美国四大航"
+    ],
+    "description": "控制美国航空客运市场绝大部分份额的四家航空公司。",
+    "source": "Department of Transportation",
+    "region": "United States",
+    "count": 4,
+    "members": [
+      "American Airlines Group, Inc.",
+      "Delta Air Lines, Inc.",
+      "United Airlines Holdings, Inc.",
+      "Southwest Airlines Co."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_007",
+    "aliases": [
+      "AI 5",
+      "AI五巨头"
+    ],
+    "description": "由Light Street Capital提出的概念，指在人工智能浪潮中占据基础设施核心地位的五家半导体与软件公司。",
+    "source": "Light Street Capital / CNBC",
+    "region": "United States / Global",
+    "count": 5,
+    "members": [
+      "NVIDIA Corp.",
+      "Microsoft Corp.",
+      "Advanced Micro Devices, Inc.",
+      "Taiwan Semiconductor Manufacturing Co., Ltd.",
+      "Broadcom Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_GL_002",
+    "aliases": [
+      "Iron Ore Big Three",
+      "铁矿石三巨头"
+    ],
+    "description": "控制全球铁矿石海运贸易绝大多数份额的三大矿业公司。",
+    "source": "Industry Standard",
+    "region": "Global",
+    "count": 3,
+    "members": [
+      "Rio Tinto Plc",
+      "BHP Group Ltd.",
+      "ALE Group Holding Ltd."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_001",
+    "aliases": [
+      "美股七姐妹",
+      "Magnificent Seven",
+      "Mag 7"
+    ],
+    "description": "由主要科技公司组成的美国股市最具影响力的七只股票，主导了标普500指数的涨幅。",
+    "source": "Bank of America / CNBC",
+    "region": "United States",
+    "count": 7,
+    "members": [
+      "Apple, Inc.",
+      "Microsoft Corp.",
+      "Alphabet, Inc.",
+      "Amazon.com, Inc.",
+      "NVIDIA Corp.",
+      "Meta Platforms, Inc.",
+      "Tesla, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_HK_001",
+    "aliases": [
+      "ATMX",
+      "港股科技四大天王"
+    ],
+    "description": "香港股市中市值最大、交易最活跃的四家中国科技/互联网公司。",
+    "source": "Hang Seng Indexes / Financial Times",
+    "region": "China (Hong Kong)",
+    "count": 4,
+    "members": [
+      "Alibaba Group Holding Ltd.",
+      "腾讯控股",
+      "美团－Ｗ",
+      "小米集团－Ｗ"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_002",
+    "aliases": [
+      "FAANG",
+      "尖牙股"
+    ],
+    "description": "2010年代中期主导市场的五大美国科技股组合（包含Facebook和Google更名前的简称）。",
+    "source": "Jim Cramer (CNBC)",
+    "region": "United States",
+    "count": 5,
+    "members": [
+      "Meta Platforms, Inc.",
+      "Apple, Inc.",
+      "Amazon.com, Inc.",
+      "Netflix, Inc.",
+      "Alphabet, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_003",
+    "aliases": [
+      "MAMAA"
+    ],
+    "description": "FAANG概念的更新版，移除了Netflix，加入了Microsoft，反映了更现代的大型科技股格局。",
+    "source": "Jim Cramer (CNBC)",
+    "region": "United States",
+    "count": 5,
+    "members": [
+      "Meta Platforms, Inc.",
+      "Alphabet, Inc.",
+      "Microsoft Corp.",
+      "Amazon.com, Inc.",
+      "Apple, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_UK_001",
+    "aliases": [
+      "UK Big Four Banks",
+      "英国四大行"
+    ],
+    "description": "主导英国零售和商业银行业务的四大银行集团。",
+    "source": "Industry Standard",
+    "region": "United Kingdom",
+    "count": 4,
+    "members": [
+      "Barclays PLC",
+      "HSBC Holdings Plc",
+      "Lloyds Banking Group Plc",
+      "NatWest Group Plc"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_008",
+    "aliases": [
+      "US Defense Primes",
+      "Big Five Defense",
+      "美国五大军工"
+    ],
+    "description": "美国国防部（Pentagon）的主要承包商，获得美国政府国防合同金额最大的五家上市公司。",
+    "source": "Department of Defense / Industry Standard",
+    "region": "United States",
+    "count": 5,
+    "members": [
+      "Lockheed Martin Corp.",
+      "RTX Corp.",
+      "The Boeing Co.",
+      "Northrop Grumman Corp.",
+      "General Dynamics Corp."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_JP_003",
+    "aliases": [
+      "Japan Mega Banks",
+      "San Mega",
+      "日本三大巨型银行"
+    ],
+    "description": "日本经历多次金融重组后形成的三个占据统治地位的金融集团。",
+    "source": "FSA Japan / Industry Standard",
+    "region": "Japan",
+    "count": 3,
+    "members": [
+      "Mitsubishi UFJ Financial Group, Inc.",
+      "Sumitomo Mitsui Financial Group, Inc.",
+      "Mizuho Financial Group, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_006",
+    "aliases": [
+      "China Big Three Airlines",
+      "国有三大航"
+    ],
+    "description": "中国中央政府国资委管辖的三家最大的骨干航空运输集团。",
+    "source": "CAAC / Industry Standard",
+    "region": "China",
+    "count": 3,
+    "members": [
+      "中国国航",
+      "中国南方航空股份",
+      "中国东方航空股份"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_007",
+    "aliases": [
+      "Mao Wu Lu",
+      "茅五泸",
+      "高端白酒三剑客"
+    ],
+    "description": "中国白酒行业中品牌价值最高、历史最悠久、也是市值最大的三家高端白酒上市公司。",
+    "source": "Industry Standard",
+    "region": "China",
+    "count": 3,
+    "members": [
+      "贵州茅台",
+      "泸州老窖",
+      "五 粮 液"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_CN_008",
+    "aliases": [
+      "Tong Da Operators",
+      "三通一达",
+      "电商快递帮"
+    ],
+    "description": "主要依附于电商体系（如淘宝天猫）成长起来的中国民营快递巨头（'三通一达'中申通、圆通、中通、韵达的统称，不含未上市或退市企业）。",
+    "source": "Industry Standard",
+    "region": "China",
+    "count": 4,
+    "members": [
+      "圆通速递",
+      "申通快递",
+      "韵达股份",
+      "中通快递－Ｗ"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_GL_004",
+    "aliases": [
+      "Big Tobacco",
+      "烟草巨头"
+    ],
+    "description": "控制全球（除中国烟草总公司外）烟草市场的几家最大的跨国上市公司，以高股息著称。",
+    "source": "Industry Standard",
+    "region": "Global",
+    "count": 3,
+    "members": [
+      "Philip Morris International, Inc.",
+      "British American Tobacco plc",
+      "Altria Group, Inc."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_009",
+    "aliases": [
+      "US Credit Card Networks",
+      "支付卡巨头",
+      "支付三巨头"
+    ],
+    "description": "垄断全球信用卡和电子支付清算网络的美国公司。",
+    "source": "Industry Standard",
+    "region": "United States",
+    "count": 3,
+    "members": [
+      "Visa, Inc.",
+      "Mastercard, Inc.",
+      "American Express Co."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_AU_002",
+    "aliases": [
+      "Iron Ore Duo",
+      "澳洲铁矿双雄"
+    ],
+    "description": "澳大利亚最大的两家资源开采公司，主要利润来源于向亚洲出口铁矿石。",
+    "source": "ASX / Industry Standard",
+    "region": "Australia",
+    "count": 2,
+    "members": [
+      "BHP Group Ltd.",
+      "Rio Tinto Plc"
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_010",
+    "aliases": [
+      "US Big Three Banks",
+      "美国金融三巨头",
+      "美国银行三巨头"
+    ],
+    "description": "美国最大的三家商业银行，代表了美国金融业的核心力量。",
+    "source": "Industry Standard",
+    "region": "United States",
+    "count": 3,
+    "members": [
+      "JPMorgan Chase & Co.",
+      "Citigroup, Inc.",
+      "Wells Fargo & Co."
+    ],
+    "type": "stock_group"
+  },
+  {
+    "id": "GRP_US_011",
+    "aliases": [
+      "US Semiconductor Big Three",
+      "美股半导体三巨头"
+    ],
+    "description": "在美国上市的全球领先半导体制造商，代表了芯片产业的最高水平。",
+    "source": "Industry Standard",
+    "region": "Global (US-listed)",
+    "count": 3,
+    "members": [
+      "Taiwan Semiconductor Manufacturing Co., Ltd.",
+      "Intel Corp.",
+      "NVIDIA Corp."
+    ],
+    "type": "stock_group"
+  }
+]

@@ -1,0 +1,178 @@
+
+======================================================================
+Parse error: Unterminated string starting at: line 2 column 26 (char 27)
+Content:
+{
+  "machine_description": "[SLOTS]\nidentifiers: identifier\nstart_date: time_range\nend_date: time_range\npct_change_threshold_percent: threshold\nturnover_threshold_yuan: threshold\n\n[CONSTRAINTS]\n
+======================================================================
+
+======================================================================
+Parse error: Unterminated string starting at: line 2 column 26 (char 27)
+Content:
+{
+  "machine_description": "[SLOTS]\nstart_date: time_range\nend_date: time_range\nadjust: option enum['', 'qfq', 'hfq']\nname: identifier\ncode: identifier\n\n[CONSTRAINTS]\nrequired: start_date, end_date, adjust\nadjust: one of ['', 'qfq', 'hfq']\n\n[TRIGGERS]\n计算A股某只股票在【指定时间段内
+======================================================================
+
+======================================================================
+Parse error: Unterminated string starting at: line 61 column 7 (char 2520)
+Content:
+{
+  "machine_description_lines": [
+    "[SLOTS]",
+    "identifiers := identifiers",
+    "start_date := start_date",
+    "end_date := end_date",
+    "pct_change_threshold_percent := pct_change_threshold_percent",
+    "turnover_threshold_yuan := turnover_threshold_yuan",
+    "",
+    "[CONSTRAINTS]",
+    "REQUIRED: identifiers, start_date, end_date",
+    "",
+    "[TRIGGERS]",
+    "",
+    "[CALL_TEMPLATE]",
+    "analyze_index_performance(identifiers=<identifiers>, start_date=<start_date>, end_date=<end_date>, pct_change_threshold_percent=<pct_change_threshold_percent>, turnover_threshold_yuan=<turnover_threshold_yuan>)",
+    "",
+    "[OUTPUT_BINDING]",
+    "status := status",
+    "count_of_matching_days := count_of_matching_days",
+    "matching_days_details := matching_days_details",
+    "message := message"
+  ],
+  "alignment": [
+    {
+      "spec_line": "identifiers := identifiers",
+      "evidence": "Inputs:\n- identifiers (identifier) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "start_date := start_date",
+      "evidence": "Inputs:\n- start_date (time_range) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "end_date := end_date",
+      "evidence": "Inputs:\n- end_date (time_range) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "pct_change_threshold_percent := pct_change_threshold_percent",
+      "evidence": "Inputs:\n- pct_change_threshold_percent (threshold)",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "turnover_threshold_yuan := turnover_threshold_yuan",
+      "evidence": "Inputs:\n- turnover_threshold_yuan (threshold)",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "REQUIRED: identifiers, start_date, end_date",
+      "evidence": "Inputs:\n- identifiers (identifier) [REQ]\n- start_date (time_range) [REQ]\n- end_date (time_range) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "analyze_index_performance(identifiers=<identifiers>, start_date=<start_date>, end_date=<end_date>, pct_change_threshold_percent=<pct_change_threshold_percent>, turnover_threshold_yuan=<turnover_threshold_yuan>)",
+      "evidence": "Tool: analyze_index_performance\n\nInputs:\n- identifiers (identifier) [REQ]\n- start_date (time_range) [REQ]\n- end_date (time_range) [REQ]\n- pct_change_threshold_percent (threshold)\n- turnover_threshold_yuan (threshold)",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "
+======================================================================
+
+======================================================================
+Parse error: Unterminated string starting at: line 16 column 5 (char 569)
+Content:
+{
+  "machine_description_lines": [
+    "[SLOTS]",
+    "identifiers := one or more index identifiers to analyze over the period",
+    "start_date := start date of the analysis period",
+    "end_date := end date of the analysis period",
+    "pct_change_threshold_percent := threshold on daily percentage change for filtering days",
+    "turnover_threshold_yuan := threshold on daily turnover amount (in yuan) for filtering days",
+    "",
+    "[CONSTRAINTS]",
+    "REQUIRED: identifiers, start_date, end_date",
+    "",
+    "[TRIGGERS]",
+    "",
+    "[CALL_TEMPLATE]",
+    "analyze_index_performance(identifiers=<identifiers>, start_date=<
+======================================================================
+
+======================================================================
+Parse error: Unterminated string starting at: line 67 column 7 (char 2180)
+Content:
+{
+  "machine_description_lines": [
+    "[SLOTS]",
+    "start_date := start_date",
+    "end_date := end_date",
+    "adjust := adjust",
+    "name := name",
+    "code := code",
+    "",
+    "[CONSTRAINTS]",
+    "adjust ∈ {\"\",\"qfq\",\"hfq\"}",
+    "REQUIRED: start_date, end_date, adjust",
+    "",
+    "[TRIGGERS]",
+    "",
+    "[CALL_TEMPLATE]",
+    "calculate_a_stock_change_pct_in_period(start_date=<start_date>, end_date=<end_date>, adjust=<adjust>, name=<name>, code=<code>)",
+    "",
+    "[OUTPUT_BINDING]",
+    "stock_name := stock_name",
+    "stock_code := stock_code",
+    "query_period_start := query_period_start",
+    "query_period_end := query_period_end",
+    "actual_trading_day_start := actual_trading_day_start",
+    "actual_trading_day_end := actual_trading_day_end",
+    "start_price := start_price",
+    "end_price := end_price"
+  ],
+  "alignment": [
+    {
+      "spec_line": "start_date := start_date",
+      "evidence": "- start_date (time_range) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "end_date := end_date",
+      "evidence": "- end_date (time_range) [REQ]",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "adjust := adjust",
+      "evidence": "- adjust (option) [REQ] enum=['', 'qfq', 'hfq']",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "name := name",
+      "evidence": "- name (identifier)",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "code := code",
+      "evidence": "- code (identifier)",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "adjust ∈ {\"\",\"qfq\",\"hfq\"}",
+      "evidence": "- adjust (option) [REQ] enum=['', 'qfq', 'hfq']",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "REQUIRED: start_date, end_date, adjust",
+      "evidence": "- start_date (time_range) [REQ]\n- end_date (time_range) [REQ]\n- adjust (option) [REQ] enum=['', 'qfq', 'hfq']",
+      "evidence_type": "input_semantics"
+    },
+    {
+      "spec_line": "calculate_a_stock_change_pct_in_period(start_date=<start_date>, end_date=<end_date>, adjust=<adjust>, name=<name>, code=<code>)",
+      "
+======================================================================
+
+======================================================================
+Attempt 1
+{
+  "machine_description": "[SLOTS]\nidentifiers := identifiers\nstart_date := start_date\nend_date := end_date\npct_change_threshold_percent := pct_change_threshold_percent\nturnover_threshold_yuan := turnover_threshold_yuan\n\n[CONSTRAINTS]\nREQUIRED: identifiers, start_date, end_date\nOPTIONAL: pct_change_threshold_percent, turnover_threshold_yuan\nENUMS: none\n\n[

@@ -1,0 +1,84 @@
+{
+  "tool_name": "get_sw_index_third_info",
+  "tool_role": "R5: Aggregation / Ranking / Analysis",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [],
+  "output_semantics": [
+    {
+      "field": "industry_code",
+      "semantic_type": "identifier",
+      "description": "The code representing the industry"
+    },
+    {
+      "field": "industry_name",
+      "semantic_type": "value",
+      "description": "The name of the industry"
+    },
+    {
+      "field": "parent_industry",
+      "semantic_type": "value",
+      "description": "The parent industry of the current industry"
+    },
+    {
+      "field": "component_count",
+      "semantic_type": "value",
+      "description": "The number of components in the industry"
+    },
+    {
+      "field": "static_pe_ratio",
+      "semantic_type": "value",
+      "description": "The static price-to-earnings ratio of the industry"
+    },
+    {
+      "field": "ttm_pe_ratio",
+      "semantic_type": "value",
+      "description": "The trailing twelve months price-to-earnings ratio of the industry"
+    },
+    {
+      "field": "pb_ratio",
+      "semantic_type": "value",
+      "description": "The price-to-book ratio of the industry"
+    },
+    {
+      "field": "static_dividend_yield",
+      "semantic_type": "value",
+      "description": "The static dividend yield of the industry"
+    }
+  ],
+  "produces": [
+    "industry_information"
+  ],
+  "consumes": [],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "empty_result"
+    ],
+    "error_surface": "return_field",
+    "notes": "The tool uses try-except blocks but does not raise exceptions."
+  },
+  "examples": {
+    "parameter_template": {},
+    "return_shape_example": {
+      "industry_code": "801010",
+      "industry_name": "银行",
+      "parent_industry": "金融",
+      "component_count": 35,
+      "static_pe_ratio": 12.34,
+      "ttm_pe_ratio": 11.56,
+      "pb_ratio": 1.45,
+      "static_dividend_yield": 3.78
+    }
+  },
+  "description": "SELECT SW_INDEX_THIRD_LEVEL.industry_code, SW_INDEX_THIRD_LEVEL.component_count\nFROM STOCK\nWHERE INDEX_CLASSIFICATION = SW_THIRD_LEVEL",
+  "tool_alternative": [
+    "get_sw_index_third_cons"
+  ],
+  "tool_dependencies": [],
+  "tool_related": [
+    "get_sw_index_third_cons"
+  ]
+}

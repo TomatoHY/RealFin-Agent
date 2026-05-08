@@ -1,0 +1,163 @@
+{
+  "tool_name": "get_stock_hist_price_data",
+  "tool_role": "R2: Time-indexed Raw Market / Macro Data",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "retrieval",
+  "input_semantics": [
+    {
+      "field": "query_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.RANGE",
+      "required": true
+    },
+    {
+      "field": "period",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.PERIOD",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "required": true
+    },
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "INDICATOR.ADJUST",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE",
+      "required": false
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_identifier",
+      "semantic_type": "identifier",
+      "description": "The stock identifier, either name or code."
+    },
+    {
+      "field": "query_date",
+      "semantic_type": "time_range",
+      "description": "The date for which the stock data is returned, in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "adjust_type",
+      "semantic_type": "option",
+      "description": "The type of adjustment applied to the stock prices."
+    },
+    {
+      "field": "period",
+      "semantic_type": "option",
+      "description": "The period of the stock data."
+    },
+    {
+      "field": "daily_quote",
+      "semantic_type": "record",
+      "description": "Daily stock price data including open, close, high, low, and amount."
+    },
+    {
+      "field": "data_source",
+      "semantic_type": "metadata",
+      "description": "The source of the data, which is 'Tencent Finance'."
+    }
+  ],
+  "produces": [
+    "stock_data"
+  ],
+  "consumes": [
+    "stock_identifier",
+    "time_range"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles errors internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "query_date": "2023-10-15",
+      "period": "daily",
+      "start_date": "20231001",
+      "end_date": "20231015",
+      "adjust": "qfq",
+      "code": "AAPL",
+      "name": null
+    },
+    "return_shape_example": {
+      "stock_identifier": "AAPL",
+      "query_date": "2023-10-15",
+      "adjust_type": "qfq",
+      "period": "daily",
+      "daily_quote": {
+        "开盘": 145.3,
+        "收盘": 147.5,
+        "最高": 148.0,
+        "最低": 144.5,
+        "成交量": 89000000,
+        "成交额": 13000000000.0,
+        "振幅": 2.42,
+        "涨跌幅": "+1.52%",
+        "涨跌额": 2.2,
+        "换手率": 0.85
+      },
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is not valid."
+      }
+    }
+  },
+  "description": "SELECT COUNT(TIMESERIES.PRICE)\nFROM A_SHARE\nWHERE QUERY_DATE = <date>\n  AND START_DATE = <date>\n  AND END_DATE = <date>\n  AND PERIOD = <daily|weekly|monthly>\n  AND ADJUST = <''|qfq|hfq>\n  AND [IDENTIFY BY (CODE = <code> OR NAME = <name>)]",
+  "tool_alternative": [
+    "get_a_stock_daily_price"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "search_kg"
+  ],
+  "tool_related": [
+    "get_a_stock_daily_price",
+    "get_code_from_name",
+    "get_hk_stock_daily_price",
+    "get_index_components",
+    "get_last_n_trading_days",
+    "get_stock_hist_price_data_tx",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "get_us_stock_daily_price",
+    "search_kg"
+  ]
+}

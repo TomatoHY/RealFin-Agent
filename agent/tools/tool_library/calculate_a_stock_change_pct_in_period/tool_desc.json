@@ -1,0 +1,152 @@
+{
+  "tool_name": "calculate_a_stock_change_pct_in_period",
+  "tool_role": "R4: Derived Metrics / Calculations",
+  "domain": [
+    "stock"
+  ],
+  "task_type": "computation",
+  "input_semantics": [
+    {
+      "field": "start_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.START\n触发条件：当用户表达“2023年全年/某年全年/从X到Y/区间涨幅对比”等需要区间累计涨跌幅时，必须显式提供 start_date，并在多股票对比时对所有股票使用同一个 start_date。\n禁用条件：禁止对不同股票在同一对比中使用不同的 start_date；禁止在同一股票上先用通用工具（如 calculate_price_change_pct_in_period）再用本工具但 start_date 不一致。\n边界规则：start_date 为自然日输入；本工具按A股交易日口径统计交易日并对齐交易日边界（COUNT_TRADING_DAYS=true）。遇到非交易日输入时，需理解为按交易日序列对齐后的区间累计涨跌幅口径；若题目要求“以2022-12-31收盘价为基准到2023-12-31收盘价”，则应将 start_date 设为 2022-12-31（而非 2023-01-01），并确保所有标的一致。\n触发条件：当题目口径隐含“以某年最后一个交易日收盘为基准到下一年年末/某日收盘”（例如问“2023年全年涨幅”但要求严格按年初基准），需先判断基准日是否应为上一年年末（如 2022-12-31）并据此设置 start_date，且所有标的必须同一天起算。\n禁用条件：禁止在工具已做交易日对齐的前提下，模型再自行把 start_date 从自然日改写为“第一个交易日”或手动平移到前/后一个交易日来“校准”，否则容易形成二次对齐造成口径偏差。\n边界规则：start_date 仅负责定义区间起点自然日；若输入日为非交易日，实际计算边界由工具按交易日序列对齐决定，后续解读时不得据此推断为“必须改成某个交易日日期字符串”再重算；跨股票比较与差值计算必须使用同一 start_date 口径的结果。",
+      "required": true
+    },
+    {
+      "field": "end_date",
+      "semantic_type": "dsl_slot",
+      "description": "TIME.END\n触发条件：当用户表达“截至某日/某年末/2023-12-31/年终收盘”等需要区间截止点时，必须显式提供 end_date，并在多股票对比时对所有股票使用同一个 end_date。\n禁用条件：禁止对不同股票在同一对比中使用不同的 end_date；禁止在同一股票上跨工具计算但 end_date 边界不一致（例如一个按自然日、一个按交易日自动对齐）。\n边界规则：end_date 为自然日输入；本工具按A股交易日口径对齐并统计交易日（COUNT_TRADING_DAYS=true）。对“全年”类问题，推荐用明确的年末边界（例如 2023-12-31）；若题目口径为“以2022-12-31到2023-12-31收盘价”，则 end_date 固定为 2023-12-31，并确保所有标的一致。\n触发条件：当题目要求“截至年末/截止到某天收盘/年终收盘价”，必须将 end_date 设置为题目指定的自然日（如 2023-12-31），并接受工具按交易日对齐后的实际边界结果用于比较与差值。\n禁用条件：禁止为追求“全年最后交易日”而在调用前/调用后自行把 end_date 改成 2023-12-29 等交易日日期（除非题目明确指定该交易日），也禁止在已得到工具输出后再用另一套 end_date 口径重算或拼接差值。\n边界规则：end_date 仅表达区间截止自然日；若该日为非交易日，工具会自动对齐到相邻交易日边界并据此计算累计涨跌幅，模型不得把这种对齐误解为需要将返回值再做额外调整或按自然日天数进行换算。",
+      "required": true
+    },
+    {
+      "field": "adjust",
+      "semantic_type": "dsl_slot",
+      "description": "PRICE.ADJUST\n正例：qfq（例如计算 2023 全年涨幅时：start_date=\"2023-01-01\", end_date=\"2023-12-31\", adjust=\"qfq\"，以避免复权口径不明导致偏差）\n反例（错误做法）：\"\"（空字符串占位，如 adjust=\"\"；会导致复权口径不明确/触发默认口径，与题目或参考口径（如 qfq）不一致，从而引入系统性误差）\n触发条件：当题目涉及跨股票对比、需要与参考答案/历史口径对齐、或明确提到“复权/前复权/后复权”时，必须显式选择 adjust（优先 qfq 以保持可比性，除非题目另有指定）。\n禁用条件：禁止在同一对比任务中对不同股票使用不同的 adjust；禁止使用空字符串作为占位以“让工具默认决定”，否则可能导致不同调用间口径不一致。\n边界规则：adjust 决定价格序列的复权方式；多股票差值计算时必须统一复权口径，否则差值不可比且可能显著偏离。若使用 qfq/hfq 之一，则所有标的与所有调用保持一致。\n触发条件：当题目指定“qfq/前复权”或需要与标准口径（如参考答案为 qfq）对齐时，必须显式填入 \"qfq\"；当题目明确要求“不复权”时才允许使用空字符串 \"\"。\n禁用条件：禁止把 \"\" 当作通用默认选项用于对比题/差值题；禁止在一次对比中对某一只股票用 \"qfq\"、另一只用 \"\" 或 \"hfq\"，否则差值不可比且可能无报错。\n边界规则：adjust 只影响复权口径，不改变“返回值单位”为累计涨跌幅的百分比数值；拿到返回值后不得因为 adjust 不同而对结果再乘/除100或做额外换算，差值计算应直接用同一 adjust 下的两个百分比数值相减。",
+      "enum": [
+        "",
+        "qfq",
+        "hfq"
+      ],
+      "required": true
+    },
+    {
+      "field": "name",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.NAME\n触发条件：当用户仅提供中文股票简称/公司名（如“宁德时代”“比亚迪”）且未提供 code 时，可使用 name 进行标的识别；同一对比中建议对所有股票都用 name 或都用 code，以减少识别歧义。\n禁用条件：禁止同时给出彼此不一致的 name 与 code（若两者都填但不匹配会导致标的错误且不易察觉）；禁止在同一股票上用不同别名/简称导致可能匹配到不同证券。\n边界规则：name 用于A股标的匹配，需能唯一定位；当存在同名/易混淆简称时优先改用 code 以保证可复现一致。",
+      "required": false
+    },
+    {
+      "field": "code",
+      "semantic_type": "dsl_slot",
+      "description": "IDENTIFIER.CODE\n触发条件：当用户提供6位A股代码，或当 name 可能存在歧义/同名时，优先使用 code 进行标的识别；多股票对比时优先都用 code 以确保一致可复现。\n禁用条件：禁止同时给出彼此不一致的 code 与 name；禁止将非A股代码格式误填为 code 造成错误匹配。\n边界规则：code 与 name 二选一即可（不要求必须提供 code）；若提供 code，应确保对应A股且与其他字段一致，以避免跨工具/跨调用出现标的口径不一致。",
+      "required": false
+    }
+  ],
+  "output_semantics": [
+    {
+      "field": "stock_name",
+      "semantic_type": "value",
+      "description": "The name of the stock."
+    },
+    {
+      "field": "stock_code",
+      "semantic_type": "value",
+      "description": "The code of the stock."
+    },
+    {
+      "field": "query_period_start",
+      "semantic_type": "metadata",
+      "description": "The start date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "query_period_end",
+      "semantic_type": "metadata",
+      "description": "The end date of the query period in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "actual_trading_day_start",
+      "semantic_type": "metadata",
+      "description": "The actual start date of trading in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "actual_trading_day_end",
+      "semantic_type": "metadata",
+      "description": "The actual end date of trading in 'YYYY-MM-DD' format."
+    },
+    {
+      "field": "start_price",
+      "semantic_type": "value",
+      "description": "The closing price on the first trading day of the period. Formatted as a string with two decimal places."
+    },
+    {
+      "field": "end_price",
+      "semantic_type": "value",
+      "description": "The closing price on the last trading day of the period. Formatted as a string with two decimal places."
+    },
+    {
+      "field": "change_percentage",
+      "semantic_type": "value",
+      "description": "The percentage change in stock price over the period. Percentage string (e.g., '+9.97%')."
+    }
+  ],
+  "produces": [
+    "stock_change_percentage"
+  ],
+  "consumes": [
+    "stock_data"
+  ],
+  "error_model": {
+    "observability": "return_schema",
+    "error_types": [
+      "invalid_parameter",
+      "internal_exception"
+    ],
+    "error_surface": "return_field",
+    "notes": "Handles exceptions internally with try-except blocks."
+  },
+  "examples": {
+    "parameter_template": {
+      "start_date": "2023-01-01",
+      "end_date": "2023-01-31",
+      "adjust": "qfq",
+      "name": null,
+      "code": "600519"
+    },
+    "return_shape_example": {
+      "stock_name": "贵州茅台",
+      "stock_code": "600519",
+      "query_period_start": "2023-01-01",
+      "query_period_end": "2023-01-31",
+      "actual_trading_day_start": "2023-01-03",
+      "actual_trading_day_end": "2023-01-30",
+      "start_price": "1800.50",
+      "end_price": "1850.75",
+      "change_percentage": "+2.79%",
+      "error": {
+        "type": "invalid_parameter",
+        "message": "The provided stock code is invalid or not found."
+      }
+    }
+  },
+  "description": "SELECT CUMULATIVE_PERCENTAGE_PRICE_CHANGE\nFROM A_SHARE\nWHERE DATE_RANGE(start_date = <YYYY-MM-DD>, end_date = <YYYY-MM-DD>)\n  AND ADJUST = <\"\"|qfq|hfq>\n  AND IDENTIFY BY (CODE = <code> OR NAME = <name>)\n  AND COUNT_TRADING_DAYS = true\n触发：当问题对象为A股（含用中文公司名/6位代码指代的A股）且需要计算某一时间区间（尤其“全年/季度/月度/一段时间”）的累计涨跌幅，或需要对多只A股做涨幅对比并要求同一口径时，优先使用本工具一次性计算各标的区间累计涨跌幅。\n禁用：不要在同一题目/同一对比中将本工具与通用的 calculate_price_change_pct_in_period（即使 market=a）混用或对同一股票重复调用不同工具后再拼接结果；若必须跨工具，则需确保完全一致的起止边界与复权口径，否则会造成口径不一致导致差值偏离且不报错。\n触发：当题目要求输出“百分比形式/保留两位小数/差值=XX%”，或需要比较两只股票谁涨幅更高并计算差值时，必须直接使用工具返回的“累计涨跌幅百分比数值”做比较与相减，不要自行再做单位换算。\n禁用：禁止将工具返回的累计涨跌幅误当作小数比例再乘以100或除以100（例如把 12.34 误当作 0.1234 或把 0.1234 误当作 12.34），禁止在结果对比时使用绝对值替代带符号涨跌幅。\n边界规则：本工具的累计涨跌幅按交易日口径自动对齐 start_date/end_date（COUNT_TRADING_DAYS=true）；当输入为非交易日时会按交易日序列对齐边界，模型不得在工具返回后再次自行“补齐/平移”起止日或用另一套边界重算差值，以免产生二次对齐导致偏离。",
+  "tool_alternative": [
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_stocks_gain_ranking_dataframe"
+  ],
+  "tool_dependencies": [
+    "get_code_from_name",
+    "get_stocks_history_dataframe",
+    "search_kg"
+  ],
+  "tool_related": [
+    "calculate_price_change_pct",
+    "calculate_price_change_pct_in_period",
+    "calculate_stock_price_range_in_period",
+    "get_code_from_name",
+    "get_stocks_gain_ranking_dataframe",
+    "get_stocks_history_dataframe",
+    "search_kg"
+  ]
+}
