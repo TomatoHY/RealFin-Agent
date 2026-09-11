@@ -11,7 +11,7 @@ from ..utils import AgentState
 class ToolSelectorNode(BaseNode):
     def __init__(
         self,
-        strategy: ["necessary", "bm25", "base"] = "necessary",
+        strategy: str = "full",
     ):
         super().__init__("ToolSelector")
         self.strategy = strategy

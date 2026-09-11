@@ -1,0 +1,15 @@
+# Runtime dependencies inferred from repository imports.
+# This is an installation manifest, not a lockfile for the paper experiments.
+akshare
+langchain
+langchain-anthropic
+langchain-community
+langchain-core
+langchain-openai
+langgraph
+numpy
+pandas
+pydantic
+pydantic-settings
+rank-bm25
+requests

@@ -8,16 +8,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from agent import AgentConfig, RealFinAgent
+from agent.models.model_factory import MODEL_REGISTRY
 from agent.tools.select_tools import tool_selection_funcs
 from agent.tools.tool_selectors import OracKToolSelector
 
 
 def parse_args():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("--model", type=str, default="gpt-5-chat")
+    argparser.add_argument("--model", type=str, choices=sorted(MODEL_REGISTRY), default="gpt-5.1")
     argparser.add_argument("--model_kwargs", type=str, default="{\"temperature\": 0.8, \"max_tokens\": 2048}")
     argparser.add_argument("--output_path", type=str, default="output")
-    argparser.add_argument("--tool_filter_strategy", type=str, default="necessary")
+    argparser.add_argument("--tool_filter_strategy", type=str, choices=sorted(tool_selection_funcs), default="full")
     argparser.add_argument("--limit", type=int, default=1)
     argparser.add_argument("--test_data_path", type=str, default="data/realfin_data.jsonl")
     argparser.add_argument("--location", type=str, choices=["realfin", "openai"], default="realfin")
@@ -211,7 +212,7 @@ def main():
     results = run_test(agent, test_data)
     with open(os.path.join(args.output_path, "test_results.jsonl"), "w") as f:
         for result in results:
-            f.write(json.dumps(result, ensure_ascii=False, indent=4) + "\n")
+            f.write(json.dumps(result, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
