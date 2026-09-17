@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="364" viewBox="0 0 1280 364" role="img" aria-labelledby="title desc">
+<title id="title">RealFin — A benchmark for financial tool orchestration</title>
+<desc id="desc">1,524 tasks, 108 workflow templates, 85 callable tools, and a 128-task diagnostic core. A dense tool palette is connected to a structured workflow.</desc>
+<defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#dce4e5"/></pattern></defs>
+<rect x="1" y="1" width="1278" height="362" rx="18" fill="#f7f9f8" stroke="#dce4e2"/>
+<rect x="738" y="20" width="508" height="216" fill="url(#grid)"/>
+<path d="M44 48H78" stroke="#127d70" stroke-width="4"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="92" y="55" fill="#41635e" font-size="18" font-weight="700" letter-spacing="2">FINANCIAL AGENT BENCHMARK</text>
+<text x="42" y="147" fill="#142c38" font-size="83" font-weight="700" letter-spacing="-4">RealFin<tspan fill="#127d70">.</tspan></text>
+<text x="46" y="191" fill="#405763" font-size="25">Can agents turn a crowded tool space</text>
+<text x="46" y="225" fill="#405763" font-size="25">into a reliable financial workflow?</text>
+<g stroke="#abbdbb" stroke-width="2" fill="none">
+<path d="M877 70C932 70 910 124 955 124M877 124H955M877 178C932 178 910 124 955 124"/>
+<path d="M989 124H1052M1086 124H1149" stroke="#127d70" stroke-width="3"/>
+</g>
+<g fill="#fff" stroke="#b5c8c4" stroke-width="2"><rect x="766" y="54" width="22" height="32" rx="5"/><rect x="794" y="54" width="22" height="32" rx="5"/><rect x="822" y="54" width="22" height="32" rx="5" fill="#d3e9e1" stroke="#127d70"/><rect x="850" y="54" width="22" height="32" rx="5"/><rect x="766" y="108" width="22" height="32" rx="5"/><rect x="794" y="108" width="22" height="32" rx="5" fill="#d3e9e1" stroke="#127d70"/><rect x="822" y="108" width="22" height="32" rx="5"/><rect x="850" y="108" width="22" height="32" rx="5"/><rect x="766" y="162" width="22" height="32" rx="5"/><rect x="794" y="162" width="22" height="32" rx="5"/><rect x="822" y="162" width="22" height="32" rx="5"/><rect x="850" y="162" width="22" height="32" rx="5" fill="#d3e9e1" stroke="#127d70"/></g>
+<g fill="#127d70"><rect x="955" y="107" width="34" height="34" rx="9"/><rect x="1052" y="107" width="34" height="34" rx="9"/><rect x="1149" y="107" width="34" height="34" rx="9"/></g>
+<g stroke="#fff" stroke-width="2.5" fill="none"><path d="m965 124 5 5 9-11"/><path d="m1062 124 5 5 9-11"/><path d="m1159 124 5 5 9-11"/></g>
+<text x="818" y="225" text-anchor="middle" fill="#5b706e" font-size="18">Many plausible tools</text>
+<text x="1070" y="225" text-anchor="middle" fill="#127d70" font-size="18">One coherent workflow</text>
+<path d="M44 261H1236" stroke="#dce4e2"/>
+<text x="46" y="310" fill="#142c38" font-size="33" font-weight="700">1,524</text><text x="46" y="339" fill="#536c72" font-size="18">Financial tasks</text><text x="365" y="310" fill="#142c38" font-size="33" font-weight="700">108</text><text x="365" y="339" fill="#536c72" font-size="18">Workflow templates</text><text x="683" y="310" fill="#142c38" font-size="33" font-weight="700">85</text><text x="683" y="339" fill="#536c72" font-size="18">Callable tools</text><text x="1002" y="310" fill="#142c38" font-size="33" font-weight="700">128</text><text x="1002" y="339" fill="#536c72" font-size="18">Diagnostic core tasks</text></g></svg>

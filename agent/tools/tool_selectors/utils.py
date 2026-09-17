@@ -51,7 +51,7 @@ def _get_distractor_tools(tool_desc: Dict[str, Dict[str, Any]], used_tools: Set[
     """从未使用的工具中随机采样一定数量的工具"""
     selected_tools = {}
     unused_tools = set(tool_desc.keys()) - used_tools
-    sampled_tools = random.sample(unused_tools, min(sample_count, len(unused_tools)))
+    sampled_tools = random.sample(sorted(unused_tools), min(sample_count, len(unused_tools)))
     for tool_name in sampled_tools:
         selected_tools[tool_name] = tool_desc[tool_name]
     return selected_tools
